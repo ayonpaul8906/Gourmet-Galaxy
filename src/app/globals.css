@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 14% 98%;
+    --foreground: 222 39% 7%;
+    --card: 220 14% 100%;
+    --card-foreground: 222 39% 7%;
+    --popover: 220 14% 100%;
+    --popover-foreground: 222 39% 7%;
+    --primary: 24 100% 65%;
+    --primary-foreground: 24 100% 10%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 41 100% 50%;
+    --accent-foreground: 41 100% 10%;
+    --destructive: 347 84% 61%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 24 100% 65%;
+    --radius: 0.75rem;
+  }
+  .dark {
+    --background: 222 39% 7%;
+    --foreground: 210 40% 98%;
+    --card: 222 39% 10%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 39% 7%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 24 100% 65%;
+    --primary-foreground: 24 100% 10%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 41 100% 50%;
+    --accent-foreground: 41 100% 10%;
+    --destructive: 347 84% 61%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 24 100% 65%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-gray-300;
+  }
+  body {
+      background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  }
+}
+
+@layer components {
+  .primary-gradient {
+    @apply bg-gradient-to-r from-[#FF6A3D] via-[#FF914D] to-[#FFD166];
+  }
+  .secondary-gradient {
+    @apply bg-gradient-to-r from-[#6A11CB] to-[#2575FC];
+  }
+  .glassmorphism {
+    background-color: hsl(var(--card) / 0.6); /* 60% opacity */
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius);
+  }
+
+  .dark .glassmorphism {
+    background-color: hsl(var(--card) / 0.3); /* 30% opacity */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }   
+  .gradient-text {
+    @apply text-transparent bg-clip-text;
+  }
+}
+
+@layer utilities {
+  @keyframes heart-bounce {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.4);
+    }
+  }
+  .animate-heart-bounce {
+    animation: heart-bounce 0.5s ease-in-out;
+  }
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

@@ -1,0 +1,76 @@
+{
+  "placeholderImages": [
+    {
+      "id": "hero-banner",
+      "description": "An abstract, vibrant hero banner with food elements.",
+      "imageUrl": "https://img.lovepik.com/background/20211021/medium/lovepik-gourmet-posters-background-image_400164084.jpg",
+      "imageHint": "food abstract"
+    },
+    {
+      "id": "pizza-1",
+      "description": "A delicious-looking pepperoni pizza.",
+      "imageUrl": "https://images.unsplash.com/photo-1605478371310-a9f1e96b4ff4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxwZXBwZXJvbmklMjBwaXp6YXxlbnwwfHx8fDE3NTg3MDQ0MDd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "pepperoni pizza"
+    },
+    {
+      "id": "burger-1",
+      "description": "A juicy classic cheeseburger.",
+      "imageUrl": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxqdWljeSUyMGJ1cmdlcnxlbnwwfHx8fDE3NTg4MTEzMDJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "juicy burger"
+    },
+    {
+      "id": "sushi-1",
+      "description": "A platter of assorted sushi rolls.",
+      "imageUrl": "https://images.unsplash.com/photo-1736885978380-8d7d9f7d7880?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxzdXNoaSUyMHBsYXR0ZXJ8ZW58MHx8fHwxNzU4NzgwNDIxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "sushi platter"
+    },
+    {
+      "id": "pasta-1",
+      "description": "A bowl of spaghetti bolognese.",
+      "imageUrl": "https://images.unsplash.com/photo-1598866594230-a7c12756260f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxzcGFnaGV0dGklMjBib2xvZ25lc2V8ZW58MHx8fHwxNzU4ODIwMzY1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "spaghetti bolognese"
+    },
+    {
+      "id": "salad-1",
+      "description": "A fresh Greek salad.",
+      "imageUrl": "https://images.unsplash.com/photo-1662743234719-d893bd7e6b61?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8ZnJlc2glMjBzYWxhZHxlbnwwfHx8fDE3NTg4MDQzNDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "fresh salad"
+    },
+    {
+      "id": "tacos-1",
+      "description": "A set of three Mexican street tacos.",
+      "imageUrl": "https://images.unsplash.com/photo-1578880711837-b028df1bcd06?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzdHJlZXQlMjB0YWNvc3xlbnwwfHx8fDE3NTg3NDMxNDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "street tacos"
+    },
+    {
+      "id": "dessert-1",
+      "description": "A slice of chocolate lava cake.",
+      "imageUrl": "https://images.unsplash.com/photo-1605807646983-377bc5a76493?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxjaG9jb2xhdGUlMjBjYWtlfGVufDB8fHx8MTc1ODgwNDUzOXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "chocolate cake"
+    },
+    {
+      "id": "steak-1",
+      "description": "A perfectly grilled steak.",
+      "imageUrl": "https://images.unsplash.com/photo-1558030006-450675393462?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxncmlsbGVkJTIwc3RlYWt8ZW58MHx8fHwxNzU4ODExNTgxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "grilled steak"
+    },
+    {
+      "id": "pho-1",
+      "description": "A steaming bowl of Vietnamese pho.",
+      "imageUrl": "https://images.unsplash.com/photo-1701480253822-1842236c9a97?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx2aWV0bmFtZXNlJTIwcGhvfGVufDB8fHx8MTc1ODgyMDM2NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "vietnamese pho"
+    },
+    {
+      "id": "pancakes-1",
+      "description": "A stack of fluffy pancakes with syrup.",
+      "imageUrl": "https://images.unsplash.com/photo-1517306085770-871ff74b2274?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxmbHVmZnklMjBwYW5jYWtlc3xlbnwwfHx8fDE3NTg4MjAzNjV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "fluffy pancakes"
+    },
+    {
+      "id": "profile-avatar-1",
+      "description": "A user profile avatar.",
+      "imageUrl": "https://images.unsplash.com/photo-1600180758890-6b94519a8ba6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg3ODg5NzR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    }
+  ]
+}
