@@ -19,10 +19,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { getCartItems, clearCart } from "@/lib/cartApi"; // ✅ new import
 
 const addressSchema = z.object({
   name: z.string().min(3, "Please enter full name."),
-  phone: z.string().regex(/^[0-9]{10}$/, "Enter a valid 10-digit phone number."),
+  phone: z
+    .string()
+    .regex(/^[0-9]{10}$/, "Enter a valid 10-digit phone number."),
   street: z.string().min(5, "Please enter a valid street address."),
   city: z.string().min(2, "Please enter a valid city."),
   postalCode: z.string().min(5, "Please enter a valid postal code."),
@@ -38,6 +41,7 @@ export default function CheckoutPageClient() {
   const [reviewText, setReviewText] = useState("");
   const [cartCleared, setCartCleared] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [cartItems, setCartItems] = useState<any[]>([]);
 
   const form = useForm({
     resolver: zodResolver(addressSchema),
@@ -54,9 +58,21 @@ export default function CheckoutPageClient() {
     setIsClient(true);
     const id = localStorage.getItem("userId");
     if (id) setUserId(id);
+
+    // ✅ Load cart items for order
+    const loadCart = async () => {
+      try {
+        const cartData = await getCartItems();
+        setCartItems(cartData.items || []);
+      } catch (err) {
+        console.error("Error loading cart:", err);
+      }
+    };
+    loadCart();
   }, []);
 
-  if (!isClient) return <div className="text-center mt-10">Loading Checkout...</div>;
+  if (!isClient)
+    return <div className="text-center mt-10">Loading Checkout...</div>;
 
   const onAddressSubmit = (values: any) => {
     console.log("Saved Address:", values);
@@ -71,19 +87,51 @@ export default function CheckoutPageClient() {
         return;
       }
 
+      if (cartItems.length === 0) {
+        toast({ title: "Error", description: "Your cart is empty." });
+        return;
+      }
+
+      const values = form.getValues();
+      const fullAddress = `${values.street}, ${values.city}, ${values.postalCode}`;
+      const totalAmount = cartItems.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
+
+      const payload = {
+        userId,
+        address: fullAddress,
+        totalAmount,
+        items: cartItems,
+      };
+
       const res = await fetch(`http://localhost:8080/api/order/place`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId }),
+        body: JSON.stringify(payload),
       });
 
-      if (res.ok) {
-        await fetch(`http://localhost:8080/api/cart/${userId}/clear`, {
-          method: "DELETE",
-        });
+      const data = await res.json();
+
+      if (res.ok && data.status === "success") {
+        console.log("✅ Order placed successfully:", data);
+
+        const orderId = data.orderId;
+        localStorage.setItem("latestOrderId", orderId);
+
+        await clearCart();
         setCartCleared(true);
         setShowReview(true);
-        toast({ title: "Order Placed!", description: "Your order will arrive soon." });
+
+        toast({
+          title: "Order Placed!",
+          description: "Your order will arrive soon.",
+        });
+
+        // setTimeout(() => {
+        //   router.push(`/track-order?id=${orderId}`);
+        // }, 1000);
       } else {
         toast({ title: "Error", description: "Failed to place order." });
       }
@@ -100,7 +148,10 @@ export default function CheckoutPageClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, rating, reviewText }),
       });
-      toast({ title: "Thank you!", description: "Your review has been submitted." });
+      toast({
+        title: "Thank you!",
+        description: "Your review has been submitted.",
+      });
       setShowReview(false);
     } catch (err) {
       console.error("Review error:", err);
@@ -211,7 +262,8 @@ export default function CheckoutPageClient() {
           </motion.div>
         )}
 
-        {step === "payment" && (
+        {step === "payment" && !cartCleared && (
+          
           <motion.div
             key="payment"
             initial={{ opacity: 0, y: 20 }}
@@ -220,20 +272,23 @@ export default function CheckoutPageClient() {
             transition={{ duration: 0.3 }}
             className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-lg"
           >
-            <h2 className="text-2xl font-semibold mb-4">Select Payment Method</h2>
+            <h2 className="text-2xl font-semibold mb-4">
+              Select Payment Method
+            </h2>
             <div className="space-y-4">
               <div className="flex items-center space-x-3 border p-4 rounded-md cursor-pointer bg-gray-50 dark:bg-gray-800">
                 <input type="radio" checked readOnly />
                 <span className="font-medium">Cash on Delivery</span>
               </div>
             </div>
-
+            
             <Button
               onClick={onPlaceOrder}
-              className="w-full mt-6 primary-gradient font-semibold text-white hover:scale-105 transition"
+              className="w-full mt-6 primary-gradient font-semibold text-white hover:scale-105 transition hover:cursor-pointer"
             >
               <Rocket className="mr-2 h-5 w-5" /> Place Order
             </Button>
+        
           </motion.div>
         )}
 
@@ -248,12 +303,31 @@ export default function CheckoutPageClient() {
             <p className="text-green-600 text-lg mb-4">
               ✅ Order placed successfully!
             </p>
-            <Button
-              onClick={() => router.push("/")}
-              className="primary-gradient text-white font-semibold"
-            >
-              <Home className="mr-2 h-5 w-5" /> Back to Home
-            </Button>
+            <div className="flex flex-col gap-3 items-center">
+              <Button
+                onClick={() => router.push("/")}
+                className="primary-gradient text-white font-semibold hover:cursor-pointer"
+              >
+                <Home className="mr-2 h-5 w-5" /> Back to Home
+              </Button>
+              <Button
+                onClick={() => {
+                  const latestOrderId = localStorage.getItem("latestOrderId");
+                  console.log("Latest order id:", latestOrderId);
+                  if (latestOrderId) {
+                    router.push(`/track-order?id=${latestOrderId}`);
+                  } else {
+                    toast({
+                      title: "No Order Found",
+                      description: "Please place an order first.",
+                    });
+                  }
+                }}
+                className="primary-gradient text-white font-semibold hover:cursor-pointer"
+              >
+                Track Your Order
+              </Button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -307,7 +381,7 @@ export default function CheckoutPageClient() {
 
               <Button
                 onClick={handleReviewSubmit}
-                className="w-full primary-gradient text-white font-semibold"
+                className="w-full primary-gradient text-white font-semibold hover:cursor-pointer"
               >
                 Submit Review
               </Button>

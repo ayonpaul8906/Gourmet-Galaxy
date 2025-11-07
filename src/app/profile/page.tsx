@@ -39,16 +39,16 @@ export default function ProfilePage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="name">Name</Label>
-                                <Input id="name" defaultValue="Captain Astro" />
+                                <Input id="name" defaultValue="Ayon Paul" />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="email">Email</Label>
-                                <Input id="email" type="email" defaultValue="astro.captain@gourmet-galaxy.com" />
+                                <Input id="email" type="email" defaultValue="ayonpaul@gourmetgalaxy.com" />
                             </div>
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="phone">Phone Number</Label>
-                            <Input id="phone" type="tel" defaultValue="+1 (234) 567-890" />
+                            <Input id="phone" type="tel" defaultValue="+91 9473654320" />
                         </div>
                          <div className="space-y-2">
                             <Label htmlFor="address">Default Address</Label>

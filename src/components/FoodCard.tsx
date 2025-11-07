@@ -1,11 +1,17 @@
 "use client";
 
 import Image from "next/image";
-import { Heart, Plus } from "lucide-react";
+import { Heart, Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn, formatPrice } from "@/lib/utils";
-import React from "react";
-import { addToCart, clearCart } from "@/lib/cartApi";
+import React, { useEffect, useState } from "react";
+import {
+  addToCart,
+  clearCart,
+  updateQuantity,
+  removeItem,
+  getCartItems,
+} from "@/lib/cartApi";
 import { toast } from "sonner";
 
 interface FoodCardProps {
@@ -21,9 +27,34 @@ interface FoodCardProps {
 }
 
 export default function FoodCard({ item, className }: FoodCardProps) {
-  const [isLiked, setIsLiked] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [quantity, setQuantity] = useState(0);
+  const [cartDocId, setCartDocId] = useState<string | null>(null);
 
+  const userId = typeof window !== "undefined" ? localStorage.getItem("userId") : null;
+
+  // ✅ Fetch existing cart item if already added
+  useEffect(() => {
+    const fetchCart = async () => {
+      if (!userId) return;
+      try {
+        const data = await getCartItems();
+        const existingItem = data?.items?.find(
+          (i: any) => i.name === item.name && i.restaurant === item.restaurant
+        );
+        if (existingItem) {
+          setQuantity(existingItem.quantity || 1);
+          setCartDocId(existingItem.id); // store Firestore document id
+        }
+      } catch (err) {
+        console.error("Failed to load cart items", err);
+      }
+    };
+    fetchCart();
+  }, [item.name, item.restaurant, userId]);
+
+  // ✅ Add to cart
   const handleAddToCart = async () => {
     setIsLoading(true);
     try {
@@ -43,39 +74,71 @@ export default function FoodCard({ item, className }: FoodCardProps) {
             label: "Replace",
             onClick: async () => {
               await clearCart();
-              await addToCart(item);
+              const newRes = await addToCart(item);
+              setQuantity(1);
+              if (newRes.cartItems?.length) {
+                const newItem = newRes.cartItems.find(
+                  (i: any) => i.name === item.name
+                );
+                setCartDocId(newItem?.id || null);
+              }
               toast.success(`${item.name} added to cart`);
             },
           },
-          style: {
-            background: "#fff5f5",
-            borderLeft: "4px solid #f87171",
-          },
         });
       } else if (res.status === "success") {
-        toast.success(`✅ ${item.name} added to cart`, {
-          style: {
-            background: "#ecfdf5",
-            borderLeft: "4px solid #34d399",
-          },
-        });
+        setQuantity(1);
+        if (res.cartItems?.length) {
+          const newItem = res.cartItems.find(
+            (i: any) => i.name === item.name
+          );
+          setCartDocId(newItem?.id || null);
+        }
+        toast.success(`✅ ${item.name} added to cart`);
       } else {
-        toast.error(res.message || "Failed to add item", {
-          style: {
-            background: "#fff5f5",
-            borderLeft: "4px solid #f87171",
-          },
-        });
+        toast.error(res.message || "Failed to add item");
       }
-    } catch (err) {
-      toast.error("❌ Something went wrong", {
-        style: {
-          background: "#fff5f5",
-          borderLeft: "4px solid #f87171",
-        },
-      });
+    } catch {
+      toast.error("❌ Something went wrong");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // ✅ Increase quantity
+  const handleIncrease = async () => {
+    if (!cartDocId) return handleAddToCart(); // if no doc id, add first
+    const newQty = quantity + 1;
+    setQuantity(newQty);
+    try {
+      await updateQuantity(cartDocId, newQty);
+      toast.success("Quantity increased");
+    } catch {
+      toast.error("Failed to update quantity");
+    }
+  };
+
+  // ✅ Decrease quantity or remove
+  const handleDecrease = async () => {
+    if (!cartDocId) return;
+    if (quantity > 1) {
+      const newQty = quantity - 1;
+      setQuantity(newQty);
+      try {
+        await updateQuantity(cartDocId, newQty);
+        toast.success("Quantity decreased");
+      } catch {
+        toast.error("Failed to update quantity");
+      }
+    } else {
+      setQuantity(0);
+      try {
+        await removeItem(cartDocId);
+        setCartDocId(null);
+        toast(`${item.name} removed from cart`);
+      } catch {
+        toast.error("Failed to remove item");
+      }
     }
   };
 
@@ -135,19 +198,45 @@ export default function FoodCard({ item, className }: FoodCardProps) {
         </h3>
         <div className="flex justify-between items-center mt-2">
           <span className="font-bold text-lg">{formatPrice(item.price)}</span>
-          <Button
-            size="sm"
-            disabled={isLoading}
-            className="primary-gradient text-primary-foreground font-bold hover:shadow-lg hover:shadow-primary/50 hover:scale-105 hover:cursor-pointer transition-all"
-            onClick={handleAddToCart}
-          >
-            {isLoading ? "Adding..." : (
-              <>
-                <Plus className="w-4 h-4 mr-1" />
-                Add
-              </>
-            )}
-          </Button>
+
+          {/* ✅ Zomato-style quantity buttons */}
+          {quantity > 0 ? (
+            <div className="flex items-center gap-2 bg-orange-100 rounded-full px-2 py-1">
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={handleDecrease}
+                className="text-orange-600 hover:bg-orange-200 rounded-full"
+              >
+                <Minus className="w-4 h-4" />
+              </Button>
+              <span className="text-sm font-semibold text-orange-700 min-w-[20px] text-center">
+                {quantity}
+              </span>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={handleIncrease}
+                className="text-orange-600 hover:bg-orange-200 rounded-full"
+              >
+                <Plus className="w-4 h-4" />
+              </Button>
+            </div>
+          ) : (
+            <Button
+              size="sm"
+              disabled={isLoading}
+              className="primary-gradient text-primary-foreground font-bold hover:shadow-lg hover:shadow-primary/50 hover:scale-105 hover:cursor-pointer transition-all"
+              onClick={handleAddToCart}
+            >
+              {isLoading ? "Adding..." : (
+                <>
+                  <Plus className="w-4 h-4 mr-1" />
+                  Add
+                </>
+              )}
+            </Button>
+          )}
         </div>
       </div>
     </div>

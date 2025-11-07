@@ -45,31 +45,35 @@ export default function Home() {
   const restaurantScrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const fetchRestaurants = async () => {
-      try {
-        const response = await fetch("http://localhost:8080/api/restaurants");
-        if (!response.ok) throw new Error("Failed to fetch restaurants");
-        const data = await response.json();
+  const fetchRestaurants = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch("http://localhost:8080/api/restaurants");
+      if (!response.ok) throw new Error("Failed to fetch restaurants");
+      const data = await response.json();
 
-        setRestaurants(data);
+      // Build restaurants & foods in one go
+      const allFoods = data.flatMap((r: Restaurant) =>
+        r.menu ? r.menu.map((f: Food) => ({ ...f, restaurant: r.name })) : []
+      );
 
-        const allFoods = data.flatMap((r: Restaurant) =>
-          r.menu ? r.menu.map((f: Food) => ({ ...f, restaurant: r.name })) : []
-        );
-        const randomFoods = allFoods
-          .sort(() => 0.5 - Math.random())
-          .slice(0, 9);
-        setFoods(randomFoods);
-        setFilteredFoods(randomFoods);
-      } catch (err) {
-        setError("Failed to load restaurants or menu");
-      } finally {
-        setLoading(false);
-      }
-    };
+      // Shuffle only once
+      const shuffledFoods = [...allFoods].sort(() => 0.5 - Math.random()).slice(0, 9);
 
-    fetchRestaurants();
-  }, []);
+      // Update all at once to prevent double rendering
+      setRestaurants(data);
+      setFoods(shuffledFoods);
+      setFilteredFoods(shuffledFoods);
+    } catch (err) {
+      setError("Failed to load restaurants or menu");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchRestaurants();
+}, []);
+
 
   const handleRestaurantSelect = (restaurant: Restaurant | null) => {
     setSelectedRestaurant(restaurant);

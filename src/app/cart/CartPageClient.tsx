@@ -257,11 +257,11 @@ export default function CartPageClient() {
                   <p className="text-xs text-muted-foreground">{item.restaurant}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button size="icon" variant="ghost" onClick={() => updateQuantity(item.id, item.quantity - 1)}>
+                  <Button size="icon" variant="ghost" className="hover:cursor-pointer" onClick={() => updateQuantity(item.id, item.quantity - 1)}>
                     {item.quantity > 1 ? <Minus className="h-4 w-4" /> : <Trash2 className="h-4 w-4 text-destructive" />}
                   </Button>
                   <span className="font-bold w-8 text-center">{item.quantity}</span>
-                  <Button size="icon" variant="ghost" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
+                  <Button size="icon" variant="ghost" className="hover:cursor-pointer" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
                     <Plus className="h-4 w-4" />
                   </Button>
                 </div>
