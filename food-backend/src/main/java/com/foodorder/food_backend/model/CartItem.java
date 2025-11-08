@@ -19,7 +19,7 @@ public class CartItem {
         this.quantity = quantity;
     }
 
-    private String image;  // add this field
+    private String image; 
 
 public String getImage() {
     return image;
@@ -29,8 +29,6 @@ public void setImage(String image) {
     this.image = image;
 }
 
-
-    // Getters and setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 

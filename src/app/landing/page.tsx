@@ -22,16 +22,16 @@ export default function LandingPage() {
       {/* 🍟 Navbar */}
       <nav className="z-10 flex justify-between items-center px-8 py-4 bg-black/30 backdrop-blur-md text-white">
         <h1 className="text-2xl md:text-3xl font-extrabold tracking-wide">
-          Flavourly<span className="text-orange-400">.</span>
+          Gourmet Galaxy<span className="text-orange-400">.</span>
         </h1>
         <div className="flex gap-4">
           <Link href="/auth">
-            <Button variant="outline" className="bg-white/20 text-white hover:bg-orange-500">
+            <Button variant="outline" className="bg-white/20 text-white hover:bg-orange-500 hover:cursor-pointer">
               Login
-            </Button>
+            </Button> 
           </Link>
           <Link href="/auth">
-            <Button className="bg-orange-500 hover:bg-orange-600 text-white">
+            <Button className="bg-orange-500 hover:bg-orange-600 text-white hover:cursor-pointer">
               Sign Up
             </Button>
           </Link>

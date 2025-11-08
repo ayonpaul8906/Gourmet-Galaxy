@@ -19,7 +19,6 @@ public class FoodController {
         this.foodService = foodService;
     }
 
-    // Add food
     @PostMapping
 public String addFood(@RequestBody Food food) throws ExecutionException, InterruptedException {
     System.out.println("Incoming Food: " + food);
@@ -27,7 +26,6 @@ public String addFood(@RequestBody Food food) throws ExecutionException, Interru
 }
 
 
-    // Get all foods
     @GetMapping
     public List<Food> getAllFoods() throws ExecutionException, InterruptedException {
         return foodService.getAllFoods();

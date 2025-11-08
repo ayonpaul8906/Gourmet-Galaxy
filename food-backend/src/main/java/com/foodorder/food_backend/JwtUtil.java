@@ -9,15 +9,12 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {
-    // Use a strong random secret in production and move to environment variable
     private final Key key;
-    private final long jwtExpirationMs = 1000L * 60 * 60 * 24; // 24 hours
+    private final long jwtExpirationMs = 1000L * 60 * 60 * 24; 
 
     public JwtUtil() {
-        // For demonstration: generate key from a fixed secret. Replace with env var in prod.
         String secret = System.getenv("JWT_SECRET");
         if (secret == null || secret.length() < 32) {
-            // fallback (not secure) for local dev: use generated key
             this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
         } else {
             this.key = Keys.hmacShaKeyFor(secret.getBytes());

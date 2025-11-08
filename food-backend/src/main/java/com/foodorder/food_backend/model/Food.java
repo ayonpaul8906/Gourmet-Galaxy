@@ -8,7 +8,7 @@ public class Food {
     private String name;
     private double price;
     private String category;
-    private String imageUrl; // <-- Add this
+    private String imageUrl; 
 
     public Food() {}
 
@@ -25,7 +25,6 @@ public class Food {
         this.imageUrl = imageUrl;
     }
 
-    // Getters & Setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 

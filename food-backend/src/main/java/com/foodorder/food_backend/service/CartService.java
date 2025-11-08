@@ -35,7 +35,6 @@ public class CartService {
         try {
             CollectionReference cartRef = db.collection("users").document(userId).collection("cart");
 
-            // Check if same item exists
             ApiFuture<QuerySnapshot> query = cartRef.whereEqualTo("name", item.getName())
                                                     .whereEqualTo("restaurant", item.getRestaurant()).get();
             List<QueryDocumentSnapshot> docs = query.get().getDocuments();

@@ -24,15 +24,15 @@ export default function ProfilePage() {
                 <CardHeader className="items-center text-center">
                     <div className="relative w-32 h-32">
                         <Avatar className="w-32 h-32 border-4 border-primary/50">
-                            {avatarImage && <AvatarImage src={avatarImage.imageUrl} alt="User Avatar" data-ai-hint={avatarImage.imageHint} />}
+                            {avatarImage && <AvatarImage src="https://e7.pngegg.com/pngimages/340/946/png-clipart-avatar-user-computer-icons-software-developer-avatar-child-face-thumbnail.png" alt="User Avatar" data-ai-hint={avatarImage.imageHint} />}
                             <AvatarFallback>GG</AvatarFallback>
                         </Avatar>
                         <Button size="icon" className="absolute bottom-0 right-0 rounded-full primary-gradient text-primary-foreground">
                             <Pencil className="w-4 h-4"/>
                         </Button>
                     </div>
-                    <CardTitle className="font-headline text-3xl mt-4">Captain Astro</CardTitle>
-                    <CardDescription>astro.captain@gourmet-galaxy.com</CardDescription>
+                    <CardTitle className="font-headline text-3xl mt-4">Ayon Paul</CardTitle>
+                    <CardDescription>ayonpaul@gmail.com</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form className="space-y-4">

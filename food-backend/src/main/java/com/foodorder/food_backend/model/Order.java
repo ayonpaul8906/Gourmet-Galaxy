@@ -12,7 +12,6 @@ public class Order {
     private LocalDateTime orderDate;
     private String status;
 
-    // Getters and setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 

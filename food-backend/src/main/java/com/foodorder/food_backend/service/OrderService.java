@@ -22,7 +22,6 @@ public class OrderService {
     private final CartService cartService;
     private final ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
 
-    // Keep references of scheduled tasks to cancel them later
     private final Map<String, List<ScheduledFuture<?>>> scheduledTasks = new ConcurrentHashMap<>();
 
     public OrderService(CartService cartService) {
@@ -30,13 +29,11 @@ public class OrderService {
         scheduler.initialize();
     }
 
-    // ✅ Place new order under users/{userId}/orders/{orderId}
     public Map<String, Object> placeOrder(String userId, List<CartItem> items, String address, double totalAmount) {
         Map<String, Object> response = new HashMap<>();
         try {
             String orderId = UUID.randomUUID().toString();
 
-            // Prepare clean serializable data for Firestore
             List<Map<String, Object>> serializedItems = new ArrayList<>();
             for (CartItem item : items) {
                 Map<String, Object> itemMap = new HashMap<>();
@@ -56,7 +53,6 @@ public class OrderService {
             orderData.put("orderDate", LocalDateTime.now().toString());
             orderData.put("status", "Placed");
 
-            // Store order
             DocumentReference orderRef = db.collection("users")
                     .document(userId)
                     .collection("orders")
@@ -64,10 +60,8 @@ public class OrderService {
 
             orderRef.set(orderData).get();
 
-            // Clear user cart
             cartService.clearCart(userId);
 
-            // 🔥 Schedule automatic status updates
             scheduleStatusUpdates(userId, orderId);
 
             response.put("status", "success");
@@ -80,7 +74,6 @@ public class OrderService {
         return response;
     }
 
-    // ✅ Automatic status update simulation (Placed → Cooking → Out for Delivery → Delivered)
     private void scheduleStatusUpdates(String userId, String orderId) {
         List<ScheduledFuture<?>> tasks = new ArrayList<>();
 
@@ -94,7 +87,6 @@ public class OrderService {
         scheduledTasks.put(orderId, tasks);
     }
 
-    // ✅ Cancel order logic
     public Map<String, Object> cancelOrder(String userId, String orderId) {
         Map<String, Object> response = new HashMap<>();
         try {
@@ -123,7 +115,6 @@ public class OrderService {
                 return response;
             }
 
-            // Cancel all scheduled tasks for this order
             if (scheduledTasks.containsKey(orderId)) {
                 for (ScheduledFuture<?> task : scheduledTasks.get(orderId)) {
                     task.cancel(false);
@@ -131,7 +122,6 @@ public class OrderService {
                 scheduledTasks.remove(orderId);
             }
 
-            // Update Firestore
             Map<String, Object> updateData = new HashMap<>();
             updateData.put("status", "Cancelled");
             orderRef.update(updateData).get();
@@ -148,7 +138,6 @@ public class OrderService {
         return response;
     }
 
-    // ✅ Fetch all orders for a user
     public List<Order> getOrdersByUser(String userId) {
         List<Order> orders = new ArrayList<>();
         try {
@@ -190,7 +179,6 @@ public class OrderService {
         return orders;
     }
 
-    // ✅ Update order status inside users/{userId}/orders/{orderId}
     public void updateOrderStatus(String userId, String orderId, String newStatus) {
         try {
             DocumentReference orderRef = db.collection("users")
@@ -203,7 +191,7 @@ public class OrderService {
 
             String currentStatus = snapshot.getString("status");
             if ("Cancelled".equalsIgnoreCase(currentStatus)) {
-                // Do not update cancelled orders
+                
                 System.out.println("⚠️ Order " + orderId + " already cancelled, skipping update.");
                 return;
             }
@@ -212,7 +200,7 @@ public class OrderService {
             updateData.put("status", newStatus);
             orderRef.update(updateData).get();
 
-            System.out.println("✅ Updated order " + orderId + " to status: " + newStatus);
+            System.out.println(" Updated order " + orderId + " to status: " + newStatus);
         } catch (Exception e) {
             e.printStackTrace();
         }

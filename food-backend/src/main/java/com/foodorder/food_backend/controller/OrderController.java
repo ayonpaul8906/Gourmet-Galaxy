@@ -20,7 +20,6 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    // ✅ Place new order
     @PostMapping("/place")
     public Map<String, Object> placeOrder(@RequestBody Map<String, Object> payload) {
         try {
@@ -49,7 +48,6 @@ public class OrderController {
         }
     }
 
-    // ✅ Fetch all orders for a user
     @GetMapping("/{userId}")
     public List<Map<String, Object>> getOrders(@PathVariable String userId) {
         List<Order> orders = orderService.getOrdersByUser(userId);
@@ -66,7 +64,6 @@ public class OrderController {
         }).toList();
     }
 
-    // ✅ Update or cancel order status
     @PutMapping("/update-status/{userId}/{orderId}")
     public Map<String, Object> updateStatus(
             @PathVariable String userId,
@@ -76,13 +73,11 @@ public class OrderController {
         String newStatus = body.get("status");
 
         try {
-            // If user requests to cancel
             if ("Cancelled".equalsIgnoreCase(newStatus)) {
                 orderService.cancelOrder(userId, orderId);
                 return Map.of("status", "success", "message", "Order cancelled successfully");
             }
 
-            // Otherwise, normal update
             orderService.updateOrderStatus(userId, orderId, newStatus);
             return Map.of("status", "success", "message", "Order status updated successfully");
 

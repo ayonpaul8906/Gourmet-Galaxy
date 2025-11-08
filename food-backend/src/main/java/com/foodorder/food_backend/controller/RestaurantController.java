@@ -10,7 +10,7 @@ import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api/restaurants")
-@CrossOrigin(origins = "*") // allow all origins for now
+@CrossOrigin(origins = "*") 
 public class RestaurantController {
 
     private final RestaurantService restaurantService;

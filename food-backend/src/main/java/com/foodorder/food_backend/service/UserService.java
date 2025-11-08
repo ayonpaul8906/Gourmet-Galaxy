@@ -20,9 +20,7 @@ public class UserService {
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
-    // Create user (signup)
     public String createUser(String name, String email, String plainPassword) throws ExecutionException, InterruptedException {
-        // Check if user exists
         ApiFuture<QuerySnapshot> query = firestore.collection("users").whereEqualTo("email", email).get();
         if (!query.get().isEmpty()) {
             return "EXISTS";
@@ -35,7 +33,6 @@ public class UserService {
         return write.get().getUpdateTime().toString();
     }
 
-    // Authenticate user (login) - returns User object if password matches, else null
     public User authenticate(String email, String plainPassword) throws ExecutionException, InterruptedException {
         ApiFuture<QuerySnapshot> query = firestore.collection("users").whereEqualTo("email", email).get();
         QuerySnapshot snapshot = query.get();
@@ -43,7 +40,6 @@ public class UserService {
 
         DocumentSnapshot doc = snapshot.getDocuments().get(0);
         User user = doc.toObject(User.class);
-        // Ensure id is set (Firestore may not fill DocumentId automatically for toObject)
         if (user.getId() == null) user.setId(doc.getId());
 
         if (user != null && passwordEncoder.matches(plainPassword, user.getPasswordHash())) {
@@ -52,7 +48,6 @@ public class UserService {
         return null;
     }
 
-    // Get user by id
     public User getUserById(String userId) throws ExecutionException, InterruptedException {
         DocumentReference ref = firestore.collection("users").document(userId);
         ApiFuture<DocumentSnapshot> future = ref.get();

@@ -8,13 +8,11 @@ public class User {
     private String id;
     private String name;
     private String email;
-    private String passwordHash; // store hashed password
-    private String role; // e.g., "USER" or "ADMIN"
+    private String passwordHash; 
+    private String role; 
 
-    // Default constructor required by Firestore mapping
     public User() {}
 
-    // Constructor overloading
     public User(String name, String email, String passwordHash) {
         this.name = name;
         this.email = email;
@@ -30,7 +28,6 @@ public class User {
         this.role = role;
     }
 
-    // Getters and setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
@@ -46,7 +43,6 @@ public class User {
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
 
-    // Method overriding for readability
     @Override
     public String toString() {
         return "User{" +

@@ -93,13 +93,13 @@ export default function OrdersPage() {
               );
               return (
                 <div key={item.id} className="flex items-center gap-4">
-                  <Image
+                  {/* <Image
                     src={item.image || placeholder?.imageUrl || "/placeholder.png"}
                     alt={item.name}
                     width={60}
                     height={60}
                     className="rounded-md object-cover"
-                  />
+                  /> */}
                   <div className="flex-grow">
                     <p className="font-semibold">{item.name}</p>
                     <p className="text-sm text-muted-foreground">
@@ -147,8 +147,8 @@ export default function OrdersPage() {
 
       <Tabs defaultValue="current" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="current">Current Orders</TabsTrigger>
-          <TabsTrigger value="past">Past Orders</TabsTrigger>
+          <TabsTrigger value="current" className="hover:cursor-pointer">Current Orders</TabsTrigger>
+          <TabsTrigger value="past" className="hover:cursor-pointer">Past Orders</TabsTrigger>
         </TabsList>
 
         {/* Current Orders */}

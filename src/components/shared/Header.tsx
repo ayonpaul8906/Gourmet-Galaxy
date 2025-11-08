@@ -92,6 +92,7 @@ export default function Header() {
             router.push("/landing");
           }}
           variant="outline"
+          className="hover:cursor-pointer"
         >
           Logout
         </Button>

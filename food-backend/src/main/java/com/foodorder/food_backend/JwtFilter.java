@@ -25,9 +25,9 @@ public class JwtFilter extends OncePerRequestFilter {
             String token = authHeader.substring(7);
             String userId = jwtUtil.validateAndGetUserId(token);
             if (userId != null) {
-                // set as request attribute for controllers
+                
                 request.setAttribute("userId", userId);
-            } // else invalid token -> no userId
+            } 
         }
         filterChain.doFilter(request, response);
     }

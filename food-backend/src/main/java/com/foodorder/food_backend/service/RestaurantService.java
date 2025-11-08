@@ -35,7 +35,6 @@ public class RestaurantService {
         return restaurants;
     }
 
-    // ✅ Add food directly into the 'menu' field
     public String addFoodToRestaurant(String restaurantId, Food food) throws ExecutionException, InterruptedException {
         DocumentReference restaurantRef = db.collection("restaurants").document(restaurantId);
         DocumentSnapshot snapshot = restaurantRef.get().get();
@@ -61,7 +60,6 @@ public class RestaurantService {
         return "Failed to add food item.";
     }
 
-    // ✅ Get menu from restaurant document
     public List<Food> getFoodsByRestaurant(String restaurantId) throws ExecutionException, InterruptedException {
         DocumentReference restaurantRef = db.collection("restaurants").document(restaurantId);
         DocumentSnapshot snapshot = restaurantRef.get().get();

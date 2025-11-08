@@ -13,10 +13,8 @@ public class Restaurant {
     private String imageUrl;
     private List<Food> menu = new ArrayList<>();
 
-    // ✅ Default constructor
     public Restaurant() {}
 
-    // ✅ Overloaded constructors
     public Restaurant(String name) {
         this.name = name;
     }
@@ -27,7 +25,6 @@ public class Restaurant {
         this.imageUrl = imageUrl;
     }
 
-    // ✅ Inner Class (Manager)
     public class Manager {
         private String managerName;
 
@@ -40,7 +37,6 @@ public class Restaurant {
         }
     }
 
-    // ✅ Add food to menu (Overloaded methods)
     public void addFood(Food food) {
         menu.add(food);
     }
@@ -49,12 +45,10 @@ public class Restaurant {
         menu.add(new Food(name, price));
     }
 
-    // ✅ Example of Polymorphism via method overriding
     public void displayInfo() {
         System.out.println("Restaurant: " + name + " | Location: " + location);
     }
 
-    // Getters & Setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 

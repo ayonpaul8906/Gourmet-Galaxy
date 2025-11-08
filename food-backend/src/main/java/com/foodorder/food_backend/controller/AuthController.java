@@ -22,7 +22,6 @@ public class AuthController {
         this.jwtUtil = jwtUtil;
     }
 
-    // Signup
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody Map<String, String> body) {
         try {
@@ -45,7 +44,6 @@ public class AuthController {
         }
     }
 
-    // Login
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
         try {
@@ -57,7 +55,6 @@ public class AuthController {
             if (user == null) return ResponseEntity.status(401).body(Map.of("error","Invalid credentials"));
 
             String token = jwtUtil.generateToken(user.getId(), user.getEmail());
-            // return token and user info (without password)
             return ResponseEntity.ok(Map.of("token", token, "user", Map.of("id", user.getId(), "name", user.getName(), "email", user.getEmail())));
         } catch (Exception e) {
             e.printStackTrace();
@@ -65,7 +62,6 @@ public class AuthController {
         }
     }
 
-    // Protected example: get profile (requires JWT filter)
     @GetMapping("/profile")
     public ResponseEntity<?> profile(@RequestAttribute(name="userId", required=false) String userId) {
         if (userId == null) return ResponseEntity.status(401).body(Map.of("error", "Unauthenticated"));

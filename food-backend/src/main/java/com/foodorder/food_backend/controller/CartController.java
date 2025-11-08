@@ -17,20 +17,17 @@ public class CartController {
         this.cartService = cartService;
     }
 
-    // ✅ Get cart items for userId
     @GetMapping("/{userId}")
     public Map<String, Object> getCartItems(@PathVariable String userId) {
         List<CartItem> items = cartService.getCartItems(userId);
         return Map.of("items", items);
     }
 
-    // ✅ Add item to cart for specific user
     @PostMapping("/{userId}/add")
     public Map<String, Object> addItem(@PathVariable String userId, @RequestBody CartItem item) {
         return cartService.addToCart(userId, item);
     }
 
-    // ✅ Update quantity
     @PutMapping("/{userId}/update")
     public Map<String, Object> updateQuantity(@PathVariable String userId, @RequestBody Map<String, Object> payload) {
         String id = (String) payload.get("id");
@@ -38,13 +35,11 @@ public class CartController {
         return cartService.updateQuantity(userId, id, quantity);
     }
 
-    // ✅ Remove item
     @DeleteMapping("/{userId}/remove/{id}")
     public Map<String, Object> removeItem(@PathVariable String userId, @PathVariable String id) {
         return cartService.removeItem(userId, id);
     }
 
-    // ✅ Clear entire cart
     @DeleteMapping("/{userId}/clear")
     public Map<String, Object> clearCart(@PathVariable String userId) {
         cartService.clearCart(userId);
