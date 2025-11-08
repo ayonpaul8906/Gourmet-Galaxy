@@ -1,36 +1,171 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🍽️ Gourmet Galaxy
 
-## Getting Started
+**Gourmet Galaxy** is a modern full-stack food ordering web application that connects users with nearby restaurants and enables them to explore menus, place orders, track deliveries, and manage carts in real-time.  
 
-First, run the development server:
+It is designed with a **React + Next.js frontend**, a **Spring Boot backend**, and **Firebase Firestore** as the database — ensuring scalability, performance, and seamless user experience.
 
+---
+
+## 🚀 Features
+
+### 👨‍🍳 User Features
+- **Browse Restaurants & Menus** – Explore multiple restaurants and their dishes.  
+- **Add to Cart** – Add, update, or remove food items from the cart.  
+- **Smart Cart Management** – Detects when items are from different restaurants.  
+- **Place Orders** – Checkout and place orders securely.  
+- **Live Order Tracking** – Track each order’s status: _Placed → Cooking → Out for Delivery → Delivered_.  
+- **Cancel Orders** – Cancel orders in progress.  
+- **Order History** – View all past and current orders with status.  
+
+### 🧑‍💼 Admin/Backend Features
+- Manage restaurant data and menus.  
+- Handle user carts, orders, and statuses dynamically via API endpoints.  
+- Real-time updates using Firestore.  
+
+---
+
+## 🧩 System Architecture
+Frontend (Next.js / React)
+↓
+REST API (Spring Boot)
+↓
+Database (Firebase Firestore)
+
+
+**Workflow:**
+1. The user interacts with the **frontend** (Next.js).  
+2. Requests are sent to **Spring Boot REST APIs**.  
+3. Spring Boot connects with **Firestore** to fetch/store data.  
+4. Responses are sent back as JSON to the frontend.
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology | Description |
+|-------|-------------|-------------|
+| **Frontend** | **Next.js (React, TypeScript)** | Responsive and interactive UI |
+| **Backend** | **Spring Boot (Java)** | RESTful APIs and business logic |
+| **Database** | **Firebase Firestore** | Cloud NoSQL database |
+| **Authentication** | LocalStorage-based (User IDs) | User session management |
+| **Hosting** | GitHub Pages / Firebase Hosting | Frontend deployment |
+| **APIs** | REST (HTTP/JSON) | Communication between frontend & backend |
+
+---
+
+## 📦 Backend Implementation
+
+### 🔹 Key Controllers
+| Controller | Path | Description |
+|-------------|------|-------------|
+| **CartController** | `/api/cart/...` | Handles adding, updating, removing items |
+| **OrderController** | `/api/order/...` | Manages placing, tracking, and updating orders |
+| **RestaurantController** | `/api/restaurants` | Fetches restaurant list and menus |
+
+### 🔹 Sample Endpoints
+
+#### 🛒 Cart
+GET /api/cart/{userId} → Fetch user cart
+POST /api/cart/{userId}/add → Add item to cart
+PUT /api/cart/{userId}/update → Update item quantity
+DELETE /api/cart/{userId}/remove/{itemId} → Remove item
+DELETE /api/cart/{userId}/clear → Clear cart
+
+#### 📦 Orders
+GET /api/order/{userId} → Get user orders
+POST /api/order/{userId} → Place new order
+PUT /api/order/update-status/{userId}/{orderId}→ Update order status
+
+#### 🍴 Restaurants
+GET /api/restaurants → Fetch all restaurants with their menus
+
+
+---
+
+## ⚙️ Backend Architecture
+
+**Packages Overview:**
+com.foodorder.food_backend
+├── controller → Defines REST APIs (Cart, Order, Restaurant)
+├── service → Business logic for Firestore CRUD operations
+├── model → POJO classes (CartItem, Order, Food)
+└── config → Firebase configuration
+
+**Example Flow:**  
+`Frontend (Add to Cart)` →  
+`POST /api/cart/{userId}/add` →  
+`CartController` → `CartService.addToCart()` →  
+`Firestore` (users/{userId}/cart)
+
+---
+
+## 💾 Firestore Database Structure
+
+users
+└── {userId}
+├── cart
+│ ├── itemId → { name, price, quantity, restaurant }
+└── orders
+├── orderId → { items, totalAmount, status, date }
+
+
+---
+
+## 🎨 Frontend Overview
+
+**Built with Next.js + TailwindCSS**, focusing on smooth UI/UX and modern design patterns.
+
+### 🔸 Pages:
+- **Home Page:** Browse restaurants and featured foods  
+- **Cart Page:** Manage added items with quantity updates  
+- **Checkout Page:** Place order  
+- **Orders Page:** View order history  
+- **Track Order Page:** Live order status tracking  
+
+### 🔸 UI Highlights:
+- Glassmorphism design  
+- Gradient typography  
+- Smooth animations (Framer Motion)  
+- Responsive layout for all devices  
+
+---
+
+## 🔒 Security & API Handling
+
+- CORS enabled (`@CrossOrigin(origins = "*")`)  
+- JSON-based request/response  
+- Unique userId stored in localStorage for cart & order mapping  
+- Error handling for invalid responses  
+
+---
+
+## 🧠 Future Enhancements
+- 🔐 Firebase Authentication for login/signup  
+- 🛍️ Admin Dashboard for restaurant management  
+- 💳 Online Payment Gateway integration  
+- 🔔 Real-time order tracking using WebSockets or Firebase listeners  
+
+---
+
+## 🧾 How to Run Locally
+
+### ▶️ Backend (Spring Boot)
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Open in IDE (IntelliJ / VS Code)
+# Configure Firebase SDK service account
+mvn spring-boot:run
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### ▶️ Frontend (Next.js)
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Visit: http://localhost:3000
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 🧑‍💻 Developed By
+Ayon Paul
+B.Tech CSE Student | Web Developer
+📧 [ayonpaul8906@gmail.com] | 🌐 GitHub[https://github.com/ayonpaul8906]
