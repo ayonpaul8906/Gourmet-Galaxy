@@ -167,7 +167,7 @@ npm run dev
 Visit: http://localhost:3000
 
 ### 🧑‍💻 Developed By
-Ayon Paul
-B.Tech CSE Student | Web Developer
-📧 Email: [Ayon Paul](ayonpaul8906@gmail.com) 
-🌐 GitHub: [Gourmet Galaxy](https://github.com/ayonpaul89060)
+**Ayon Paul**  
+B.Tech CSE Student | Web Developer  
+📧 Email: [ayonpaul8906@gmail.com](mailto:ayonpaul8906@gmail.com)  
+🌐 GitHub: [Ayon Paul](https://github.com/ayonpaul8906)
