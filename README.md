@@ -10,8 +10,7 @@ It is designed with a **React + Next.js frontend**, a **Spring Boot backend**, a
 
 ### 👨‍🍳 User Features
 - **Browse Restaurants & Menus** – Explore multiple restaurants and their dishes.  
-- **Add to Cart** – Add, update, or remove food items from the cart.  
-- **Smart Cart Management** – Detects when items are from different restaurants.  
+- **Add to Cart** – Add, update, or remove food items from the cart.   
 - **Place Orders** – Checkout and place orders securely.  
 - **Live Order Tracking** – Track each order’s status: _Placed → Cooking → Out for Delivery → Delivered_.  
 - **Cancel Orders** – Cancel orders in progress.  
@@ -25,12 +24,13 @@ It is designed with a **React + Next.js frontend**, a **Spring Boot backend**, a
 ---
 
 ## 🧩 System Architecture
+```
 Frontend (Next.js / React)
 ↓
 REST API (Spring Boot)
 ↓
 Database (Firebase Firestore)
-
+```
 
 **Workflow:**
 1. The user interacts with the **frontend** (Next.js).  
@@ -48,7 +48,6 @@ Database (Firebase Firestore)
 | **Backend** | **Spring Boot (Java)** | RESTful APIs and business logic |
 | **Database** | **Firebase Firestore** | Cloud NoSQL database |
 | **Authentication** | LocalStorage-based (User IDs) | User session management |
-| **Hosting** | GitHub Pages / Firebase Hosting | Frontend deployment |
 | **APIs** | REST (HTTP/JSON) | Communication between frontend & backend |
 
 ---
