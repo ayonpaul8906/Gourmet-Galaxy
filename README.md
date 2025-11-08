@@ -169,4 +169,5 @@ Visit: http://localhost:3000
 ### 🧑‍💻 Developed By
 Ayon Paul
 B.Tech CSE Student | Web Developer
-📧 [ayonpaul8906@gmail.com] | 🌐 GitHub[https://github.com/ayonpaul8906]
+📧 Email: [Ayon Paul](ayonpaul8906@gmail.com) 
+🌐 GitHub: [Gourmet Galaxy](https://github.com/ayonpaul89060)
