@@ -52,6 +52,15 @@ Database (Firebase Firestore)
 
 ---
 
+## 📸 Screenshots  
+
+| **Home** | **Explore** | **Orders** | **Cart** |
+|:------------:|:------------:|:------------:|:------------:|
+| ![Home](https://github.com/user-attachments/assets/d7597ca2-6ac2-48e0-9a8e-a0ecc559cc8b) | ![Explore](https://github.com/user-attachments/assets/a465f163-7a8e-489a-b818-9b576654857c) | ![Orders](https://github.com/user-attachments/assets/1e761b7b-ff16-4cd3-a4b8-adc096713875) | ![Cart](https://github.com/user-attachments/assets/ae14fff7-fe5c-4a44-b5e1-92e8b7471bf0) |
+
+
+---
+
 ## 📦 Backend Implementation
 
 ### 🔹 Key Controllers
