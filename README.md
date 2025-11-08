@@ -64,19 +64,19 @@ Database (Firebase Firestore)
 ### 🔹 Sample Endpoints
 
 #### 🛒 Cart
-GET /api/cart/{userId} → Fetch user cart
-POST /api/cart/{userId}/add → Add item to cart
-PUT /api/cart/{userId}/update → Update item quantity
-DELETE /api/cart/{userId}/remove/{itemId} → Remove item
-DELETE /api/cart/{userId}/clear → Clear cart
+- GET /api/cart/{userId} → Fetch user cart
+- POST /api/cart/{userId}/add → Add item to cart
+- PUT /api/cart/{userId}/update → Update item quantity
+- DELETE /api/cart/{userId}/remove/{itemId} → Remove item
+- DELETE /api/cart/{userId}/clear → Clear cart
 
 #### 📦 Orders
-GET /api/order/{userId} → Get user orders
-POST /api/order/{userId} → Place new order
-PUT /api/order/update-status/{userId}/{orderId}→ Update order status
+- GET /api/order/{userId} → Get user orders
+- POST /api/order/{userId} → Place new order
+- PUT /api/order/update-status/{userId}/{orderId}→ Update order status
 
 #### 🍴 Restaurants
-GET /api/restaurants → Fetch all restaurants with their menus
+- GET /api/restaurants → Fetch all restaurants with their menus
 
 
 ---
@@ -84,11 +84,13 @@ GET /api/restaurants → Fetch all restaurants with their menus
 ## ⚙️ Backend Architecture
 
 **Packages Overview:**
+```
 com.foodorder.food_backend
 ├── controller → Defines REST APIs (Cart, Order, Restaurant)
 ├── service → Business logic for Firestore CRUD operations
 ├── model → POJO classes (CartItem, Order, Food)
 └── config → Firebase configuration
+```
 
 **Example Flow:**  
 `Frontend (Add to Cart)` →  
@@ -99,14 +101,14 @@ com.foodorder.food_backend
 ---
 
 ## 💾 Firestore Database Structure
-
+```
 users
 └── {userId}
 ├── cart
 │ ├── itemId → { name, price, quantity, restaurant }
 └── orders
 ├── orderId → { items, totalAmount, status, date }
-
+```
 
 ---
 
