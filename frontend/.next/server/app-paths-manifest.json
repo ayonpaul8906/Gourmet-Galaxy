@@ -1,0 +1,8 @@
+{
+  "/home/page": "app/home/page.js",
+  "/cart/page": "app/cart/page.js",
+  "/checkout/page": "app/checkout/page.js",
+  "/track-order/page": "app/track-order/page.js",
+  "/orders/page": "app/orders/page.js",
+  "/page": "app/page.js"
+}
