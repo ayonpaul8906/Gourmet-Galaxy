@@ -75,12 +75,12 @@ export default function Header() {
 
         <div className="flex flex-1 items-center justify-end space-x-2">
           <Link href="/cart">
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className="hover:cursor-pointer" >
               <ShoppingCart className="h-5 w-5" />
             </Button>
           </Link>
           <Link href="/profile">
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className="hover:cursor-pointer">
               <User className="h-5 w-5" />
             </Button>
           </Link>
