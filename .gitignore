@@ -2,6 +2,7 @@
 # FRONTEND (Next.js + TypeScript + Tailwind)
 # --------------------------------------------------------
 node_modules
+/frontend/.next
 /.next
 /out
 /build
