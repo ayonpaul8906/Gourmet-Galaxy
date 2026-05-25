@@ -9,34 +9,23 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 @Configuration
 public class FirebaseConfig {
 
     @Bean
-    public Firestore firestore() throws Exception {
+    public Firestore firestore() throws IOException {
 
-        InputStream serviceAccount;
+        String firebaseConfig = System.getenv("FIREBASE_SERVICE_ACCOUNT");
 
-        // ✅ Production (Render ENV variable)
-        String firebaseConfig = System.getenv("FIREBASE_CONFIG");
-
-        if (firebaseConfig != null && !firebaseConfig.isEmpty()) {
-
-            serviceAccount = new ByteArrayInputStream(
-                    firebaseConfig.getBytes(StandardCharsets.UTF_8)
-            );
-
-        } else {
-
-            // ✅ Local development fallback
-            serviceAccount = new FileInputStream(
-                    "src/main/resources/serviceAccountKey.json"
-            );
+        if (firebaseConfig == null || firebaseConfig.isEmpty()) {
+            throw new RuntimeException("FIREBASE_SERVICE_ACCOUNT environment variable is missing");
         }
+
+        ByteArrayInputStream serviceAccount =
+                new ByteArrayInputStream(firebaseConfig.getBytes(StandardCharsets.UTF_8));
 
         FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
