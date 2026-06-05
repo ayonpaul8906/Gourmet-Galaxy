@@ -11,7 +11,7 @@ import { addToCart, clearCart } from "@/lib/cartApi";
 import { toast } from "sonner";
 
 interface Food {
-  id?: string;
+  id: string;
   name: string;
   price: number;
   category?: string;
