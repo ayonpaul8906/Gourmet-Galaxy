@@ -26,7 +26,7 @@ export interface Restaurant {
   rating: number;
 }
 
-export type OrderStatus = 'Cooking' | 'On the way' | 'Delivered' | 'Cancelled';
+export type OrderStatus = 'Placed'| 'Cooking' | 'Out for Delivery' | 'Delivered' | 'Cancelled';
 
 export interface Order {
   id: string;
@@ -159,7 +159,7 @@ export const orders: Order[] = [
     {
         id: '#GG-12346',
         date: '2023-10-27T12:30:00Z',
-        status: 'On the way',
+        status: 'Out for Delivery',
         total: 12.5,
         items: [
             { foodId: 'food-2', quantity: 1 }
