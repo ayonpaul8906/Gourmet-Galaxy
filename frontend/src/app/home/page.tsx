@@ -143,7 +143,7 @@ export default function Home() {
   };
 
   // ✅ Drag scroll handler
-  const enableDragScroll = (ref: React.RefObject<HTMLDivElement>) => {
+  const enableDragScroll = (ref: React.RefObject<HTMLDivElement | null>) => {
     if (!ref.current) return;
     let isDown = false;
     let startX: number;
