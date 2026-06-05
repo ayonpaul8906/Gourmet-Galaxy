@@ -36,7 +36,7 @@ export default function TrackingPage() {
           return;
         }
 
-        const res = await fetch(`http://localhost:8080/api/order/${userId}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/order/${userId}`);
         if (!res.ok) throw new Error("Failed to fetch orders");
 
         const data = await res.json();
@@ -83,7 +83,7 @@ export default function TrackingPage() {
     if (!userId) return;
 
     try {
-      const res = await fetch(`http://localhost:8080/api/order/update-status/${userId}/${orderId}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/order/update-status/${userId}/${orderId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: "Cancelled" }),
