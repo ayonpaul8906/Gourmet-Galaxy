@@ -22,8 +22,8 @@ export default function AuthPage() {
     e.preventDefault();
 
     const endpoint = isLogin
-      ? "http://localhost:8080/api/auth/login"
-      : "http://localhost:8080/api/auth/signup";
+      ? `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`
+      : `${process.env.NEXT_PUBLIC_API_URL}/api/auth/signup`;
 
     try {
       const res = await fetch(endpoint, {
