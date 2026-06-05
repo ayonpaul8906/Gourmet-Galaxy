@@ -32,8 +32,12 @@ interface UserMeta {
   isFirstOrder: boolean;
 }
 
-export default function CartPageClient() {
-  const [items, setItems] = useState<CartItem[]>([]);
+interface CartPageClientProps {
+  initialItems?: CartItem[];
+}
+
+export default function CartPageClient({ initialItems = [] }: CartPageClientProps) {
+  const [items, setItems] = useState<CartItem[]>(initialItems);
   const [loading, setLoading] = useState(true);
   const [subtotal, setSubtotal] = useState(0);
   const [selectedDiscount, setSelectedDiscount] = useState<string | null>(null);
