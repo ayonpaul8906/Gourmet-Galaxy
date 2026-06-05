@@ -8,7 +8,7 @@ interface OrderStatusBadgeProps {
 
 const statusStyles: Record<OrderStatus, string> = {
   'Cooking': 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-  'On the way': 'bg-blue-500/20 text-blue-400 border-blue-500/30 secondary-gradient text-white',
+  'Out for Delivery': 'bg-blue-500/20 text-blue-400 border-blue-500/30 secondary-gradient text-white',
   'Delivered': 'bg-green-500/20 text-green-400 border-green-500/30',
   'Cancelled': 'bg-red-500/20 text-red-400 border-red-500/30'
 };
