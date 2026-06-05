@@ -1,5 +1,5 @@
 // /lib/cartApi.ts
-const BASE_URL = "http://localhost:8080/api/cart";
+const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/cart`;
 
 function getUserId() {
   const userId = localStorage.getItem("userId");
@@ -29,7 +29,7 @@ export async function getCartItems() {
     return { items: [] };
   }
 
-  const res = await fetch(`http://localhost:8080/api/cart/${userId}`);
+  const res = await fetch(`${BASE_URL}/api/cart/${userId}`);
   if (!res.ok) throw new Error("Failed to fetch cart items");
   return await res.json();
 }
