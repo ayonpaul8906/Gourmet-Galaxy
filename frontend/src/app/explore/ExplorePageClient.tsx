@@ -42,13 +42,13 @@ export default function ExplorePageClient({ allFoods }: ExplorePageClientProps) 
     )
   );
 
-  const filteredCategoryFoods =
-    selectedCategory &&
-    allFoods.filter(
+  const filteredCategoryFoods = selectedCategory
+    ? allFoods.filter(
       (f) =>
         f.category?.toLowerCase() === selectedCategory.toLowerCase() ||
         f.name.toLowerCase().includes(selectedCategory.toLowerCase())
-    );
+    )
+    : allFoods;
 
   // ✅ Smooth mouse drag scroll
   const ScrollContainer = ({ children }: { children: React.ReactNode }) => {
