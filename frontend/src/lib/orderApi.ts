@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8080/api/order";
+const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/order`;
 
 function getUserId() {
   const userId = localStorage.getItem("userId");
