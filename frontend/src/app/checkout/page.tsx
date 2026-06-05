@@ -106,7 +106,7 @@ export default function CheckoutPageClient() {
         items: cartItems,
       };
 
-      const res = await fetch(`http://localhost:8080/api/order/place`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/order/place`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -143,7 +143,7 @@ export default function CheckoutPageClient() {
 
   const handleReviewSubmit = async () => {
     try {
-      await fetch("http://localhost:8080/api/reviews/add", {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/add`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, rating, reviewText }),
