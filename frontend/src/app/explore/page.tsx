@@ -1,7 +1,7 @@
 import ExplorePageClient from "./ExplorePageClient";
 
 export default async function ExplorePage() {
-  const res = await fetch("http://localhost:8080/api/restaurants", {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/restaurants`, {
     next: { revalidate: 0 },
   });
 
