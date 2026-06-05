@@ -56,7 +56,7 @@ export default function CartPageClient() {
   const fetchCartItems = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:8080/api/cart/${userId}`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cart/${userId}`);
       if (!res.ok) throw new Error("Failed to fetch cart");
       const data = await res.json();
       setItems(data.items || []); // ✅ fixed
@@ -83,7 +83,7 @@ export default function CartPageClient() {
     if (newQuantity <= 0) return handleRemoveItem(id);
     try {
       const res = await fetch(
-        `http://localhost:8080/api/cart/${userId}/update`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/cart/${userId}/update`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -105,7 +105,7 @@ export default function CartPageClient() {
   const handleRemoveItem = async (id: string) => {
     try {
       const res = await fetch(
-        `http://localhost:8080/api/cart/${userId}/remove/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/cart/${userId}/remove/${id}`,
         {
           method: "DELETE",
         }
@@ -125,7 +125,7 @@ export default function CartPageClient() {
   const addToCartApi = async (item: CartItem) => {
     try {
       const res = await fetch(
-        `http://localhost:8080/api/cart/add/${userId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/cart/add/${userId}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
