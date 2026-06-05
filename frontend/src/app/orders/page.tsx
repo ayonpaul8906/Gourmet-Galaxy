@@ -16,6 +16,7 @@ import Image from "next/image";
 import OrderStatusBadge from "@/components/OrderStatusBadge";
 import { formatPrice } from "@/lib/utils";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { OrderStatus } from "@/lib/data";
 
 interface CartItem {
   id: string;
@@ -31,7 +32,7 @@ interface Order {
   totalAmount: number;
   address: string;
   date: string;
-  status: string;
+  status: OrderStatus;
   items: CartItem[];
 }
 
