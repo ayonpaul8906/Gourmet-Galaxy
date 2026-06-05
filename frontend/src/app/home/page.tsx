@@ -48,7 +48,7 @@ export default function Home() {
   const fetchRestaurants = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:8080/api/restaurants");
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/restaurants`);
       if (!response.ok) throw new Error("Failed to fetch restaurants");
       const data = await response.json();
 
