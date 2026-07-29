@@ -67,37 +67,14 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<"profile" | "addresses" | "orders" | "wallet" | "settings">("profile");
 
   // Profile info state
-  const [name, setName] = useState("Ayon Paul");
-  const [email, setEmail] = useState("ayonpaul@gmail.com");
-  const [phone, setPhone] = useState("+91 98765 43210");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [dietaryPref, setDietaryPref] = useState<"all" | "veg" | "non-veg">("all");
-  const [avatarUrl, setAvatarUrl] = useState(
-    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=300"
-  );
+  const [avatarUrl, setAvatarUrl] = useState("");
 
   // Address state
-  const [addresses, setAddresses] = useState<Address[]>([
-    {
-      id: "addr-1",
-      type: "Home",
-      name: "Ayon Paul",
-      street: "123 Galactic Avenue, Star City",
-      city: "Kolkata",
-      pincode: "700001",
-      phone: "+91 98765 43210",
-      isDefault: true,
-    },
-    {
-      id: "addr-2",
-      type: "Work",
-      name: "Ayon Paul (Office)",
-      street: "Sector V, Tech Hub, Salt Lake",
-      city: "Kolkata",
-      pincode: "700091",
-      phone: "+91 98765 43210",
-      isDefault: false,
-    },
-  ]);
+  const [addresses, setAddresses] = useState<Address[]>([]);
 
   const [showAddAddressModal, setShowAddAddressModal] = useState(false);
   const [newAddrType, setNewAddrType] = useState<"Home" | "Work" | "Other">("Home");
@@ -110,7 +87,7 @@ export default function ProfilePage() {
   const [loadingOrders, setLoadingOrders] = useState(false);
 
   // Wallet state
-  const [walletBalance, setWalletBalance] = useState(450);
+  const [walletBalance, setWalletBalance] = useState(0);
   const [addAmount, setAddAmount] = useState("");
   const [showAddMoney, setShowAddMoney] = useState(false);
 
@@ -122,13 +99,14 @@ export default function ProfilePage() {
   // Load saved profile data on mount
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const savedName = localStorage.getItem("userName");
-      const savedEmail = localStorage.getItem("userEmail");
-      const savedPhone = localStorage.getItem("userPhone");
+      const savedName = localStorage.getItem("userName") || "";
+      const savedEmail = localStorage.getItem("userEmail") || "";
+      const savedPhone = localStorage.getItem("userPhone") || "";
       const savedPref = localStorage.getItem("dietaryPref");
-      const savedAddresses = localStorage.getItem("userAddresses");
+      // Load addresses from the same key used by the checkout GPS page
+      const savedAddresses = localStorage.getItem("savedAddresses") || localStorage.getItem("userAddresses");
 
-      if (savedName) setName(savedName);
+      setName(savedName);
       if (savedEmail) setEmail(savedEmail);
       if (savedPhone) setPhone(savedPhone);
       if (savedPref) setDietaryPref(savedPref as any);

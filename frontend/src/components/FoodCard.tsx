@@ -165,7 +165,7 @@ export default function FoodCard({ item, className }: FoodCardProps) {
       )}
     >
       <div className="relative h-44 w-full overflow-hidden">
-        {item.imageUrl ? (
+        {item.imageUrl && item.imageUrl.trim() !== "" && !item.imageUrl.startsWith("data:") && item.imageUrl.length > 5 ? (
           <Image
             src={item.imageUrl}
             alt={item.name}

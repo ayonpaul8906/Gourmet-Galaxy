@@ -56,7 +56,7 @@ Database (Firebase Firestore)
 
 | **Home** | **Explore** | **Orders** | **Cart** |
 |:------------:|:------------:|:------------:|:------------:|
-| ![Home](https://github.com/user-attachments/assets/d7597ca2-6ac2-48e0-9a8e-a0ecc559cc8b) | ![Explore](https://github.com/user-attachments/assets/a465f163-7a8e-489a-b818-9b576654857c) | ![Orders](https://github.com/user-attachments/assets/1e761b7b-ff16-4cd3-a4b8-adc096713875) | ![Cart](https://github.com/user-attachments/assets/ae14fff7-fe5c-4a44-b5e1-92e8b7471bf0) |
+| ![Home](https://github.com/user-attachments/assets/efee502d-548b-459c-899c-6af103338b77) | ![Explore](https://github.com/user-attachments/assets/97417fa0-c5ae-410e-b9b5-7f9c2faccaef) | ![Orders](https://github.com/user-attachments/assets/b9f3e2e0-478f-4fc2-a6a3-ec87085fb8dc) | ![Cart](https://github.com/user-attachments/assets/4707a318-4acc-49b1-8a93-2a1a39ea06b1) |
 
 
 ---

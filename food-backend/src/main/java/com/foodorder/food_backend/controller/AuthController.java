@@ -8,29 +8,46 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 public class AuthController {
 
     private final UserService userService;
     private final JwtUtil jwtUtil;
+
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
 
     public AuthController(UserService userService, JwtUtil jwtUtil) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
     }
 
+    private String sanitizeInput(String input) {
+        if (input == null) return "";
+        // Strip XSS script tags and trim whitespace
+        return input.replaceAll("<[^>]*>", "").trim();
+    }
+
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody Map<String, String> body) {
         try {
-            String name = body.get("name");
-            String email = body.get("email");
+            String name = sanitizeInput(body.get("name"));
+            String email = sanitizeInput(body.get("email")).toLowerCase();
             String password = body.get("password");
 
-            if (name == null || email == null || password == null) {
-                return ResponseEntity.badRequest().body(Map.of("error", "name, email and password required"));
+            if (name.isEmpty() || email.isEmpty() || password == null || password.isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Name, valid email and password are required"));
+            }
+
+            if (!EMAIL_PATTERN.matcher(email).matches()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Invalid email format"));
+            }
+
+            if (password.length() < 6) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Password must be at least 6 characters long"));
             }
 
             String result = userService.createUser(name, email, password);
@@ -39,26 +56,32 @@ public class AuthController {
             }
             return ResponseEntity.ok(Map.of("message", "User created", "time", result));
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(500).body(Map.of("error", "An internal error occurred"));
         }
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
         try {
-            String email = body.get("email");
+            String email = sanitizeInput(body.get("email")).toLowerCase();
             String password = body.get("password");
-            if (email == null || password == null) return ResponseEntity.badRequest().body(Map.of("error","email and password required"));
+
+            if (email.isEmpty() || password == null || password.isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Email and password are required"));
+            }
 
             var user = userService.authenticate(email, password);
-            if (user == null) return ResponseEntity.status(401).body(Map.of("error","Invalid credentials"));
+            if (user == null) {
+                return ResponseEntity.status(401).body(Map.of("error", "Invalid email or password"));
+            }
 
             String token = jwtUtil.generateToken(user.getId(), user.getEmail());
-            return ResponseEntity.ok(Map.of("token", token, "user", Map.of("id", user.getId(), "name", user.getName(), "email", user.getEmail())));
+            return ResponseEntity.ok(Map.of(
+                "token", token,
+                "user", Map.of("id", user.getId(), "name", user.getName(), "email", user.getEmail())
+            ));
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(500).body(Map.of("error", "Authentication error"));
         }
     }
 
@@ -70,9 +93,7 @@ public class AuthController {
             if (user == null) return ResponseEntity.status(404).body(Map.of("error", "User not found"));
             return ResponseEntity.ok(Map.of("id", user.getId(), "name", user.getName(), "email", user.getEmail()));
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(500).body(Map.of("error", "Error fetching profile"));
         }
     }
 }
-

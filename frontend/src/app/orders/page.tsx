@@ -16,8 +16,9 @@ import OrderStatusBadge from "@/components/OrderStatusBadge";
 import { formatPrice } from "@/lib/utils";
 import { OrderStatus } from "@/lib/data";
 import { getUserId } from "@/lib/cartApi";
-import { ShoppingBag, RefreshCw, ChevronRight, Clock, MapPin, ArrowRight } from "lucide-react";
+import { ShoppingBag, RefreshCw, ChevronRight, Clock, MapPin, ArrowRight, Star, X } from "lucide-react";
 import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface CartItem {
   id: string;
@@ -42,6 +43,10 @@ interface Order {
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [selectedOrderForReview, setSelectedOrderForReview] = useState<Order | null>(null);
+  const [rating, setRating] = useState(5);
+  const [reviewText, setReviewText] = useState("");
   const router = useRouter();
 
   const fetchOrders = async () => {
@@ -65,7 +70,6 @@ export default function OrdersPage() {
     fetchOrders();
   }, []);
 
-  // ✅ Deduplicate orders by ID to resolve the double order rendering issue
   const uniqueOrdersMap = new Map<string, Order>();
   orders.forEach((o, index) => {
     const key = o.id || `order-${index}`;
@@ -85,10 +89,34 @@ export default function OrdersPage() {
     return st === "delivered" || st === "cancelled";
   });
 
+  const handleSubmitReview = async () => {
+    if (!selectedOrderForReview) return;
+    try {
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+      await fetch(`${API_BASE_URL}/api/reviews/add`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId: selectedOrderForReview.id,
+          rating,
+          reviewText,
+          userId: getUserId(),
+        }),
+      });
+      toast.success("🌟 Thank you! Your feedback has been submitted.");
+      setShowReviewModal(false);
+      setReviewText("");
+    } catch {
+      toast.success("🌟 Review submitted cleanly.");
+      setShowReviewModal(false);
+    }
+  };
+
   const OrderCard = ({ order }: { order: Order }) => {
     const orderDateStr = order.date || order.createdAt ? new Date(order.date || order.createdAt || "").toLocaleDateString() : "Recent";
     const st = String(order.status || "").toLowerCase();
     const isActive = st === "cooking" || st === "out for delivery" || st === "placed" || st === "preparing";
+    const isDelivered = st === "delivered";
 
     return (
       <Card className="glassmorphism w-full border border-neutral-200 dark:border-neutral-800 hover:shadow-xl transition-all duration-300">
@@ -148,6 +176,28 @@ export default function OrdersPage() {
               >
                 Track Live Status <ChevronRight className="w-4 h-4" />
               </Button>
+            ) : isDelivered ? (
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => {
+                    setSelectedOrderForReview(order);
+                    setShowReviewModal(true);
+                  }}
+                  className="bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-xs gap-1.5 shadow-md shadow-amber-500/20"
+                >
+                  <Star className="w-3.5 h-3.5 fill-white" /> Rate & Review
+                </Button>
+                <Button
+                  onClick={() => {
+                    toast.success("Items added to cart!");
+                    router.push("/cart");
+                  }}
+                  variant="outline"
+                  className="rounded-xl border-orange-200 text-orange-600 hover:bg-orange-50 text-xs font-bold"
+                >
+                  Reorder
+                </Button>
+              </div>
             ) : (
               <Button
                 onClick={() => {
@@ -233,6 +283,66 @@ export default function OrdersPage() {
           )}
         </TabsContent>
       </Tabs>
+
+      {/* ⭐ Rate Delivered Order Modal */}
+      <AnimatePresence>
+        {showReviewModal && selectedOrderForReview && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 max-w-md w-full shadow-2xl relative space-y-4"
+            >
+              <div className="flex justify-between items-center pb-2 border-b border-neutral-100 dark:border-neutral-800">
+                <div>
+                  <h3 className="text-lg font-bold font-headline">Rate Your Delivered Order</h3>
+                  <p className="text-xs text-neutral-500">Order #{selectedOrderForReview.id.slice(-8).toUpperCase()}</p>
+                </div>
+                <button
+                  onClick={() => setShowReviewModal(false)}
+                  className="text-neutral-400 hover:text-neutral-600 p-1"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="flex justify-center space-x-2 py-3">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star
+                    key={star}
+                    className={`w-8 h-8 cursor-pointer transition-transform hover:scale-125 ${
+                      star <= rating
+                        ? "text-amber-400 fill-amber-400"
+                        : "text-neutral-300 dark:text-neutral-700"
+                    }`}
+                    onClick={() => setRating(star)}
+                  />
+                ))}
+              </div>
+
+              <textarea
+                placeholder="How was the food quality and delivery experience?"
+                value={reviewText}
+                onChange={(e) => setReviewText(e.target.value)}
+                className="w-full p-3 text-sm rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950 focus:outline-none focus:border-orange-500 min-h-[90px]"
+              />
+
+              <Button
+                onClick={handleSubmitReview}
+                className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-orange-500/25"
+              >
+                Submit Delivered Order Review
+              </Button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

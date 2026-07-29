@@ -10,7 +10,7 @@ import java.util.Date;
 @Component
 public class JwtUtil {
     private final Key key;
-    private final long jwtExpirationMs = 1000L * 60 * 60 * 24; 
+    private final long jwtExpirationMs = 1000L * 60 * 60 * 24 * 30; // 30-day session
 
     public JwtUtil() {
         String secret = System.getenv("JWT_SECRET");
@@ -21,13 +21,13 @@ public class JwtUtil {
         }
     }
 
-    public String generateToken(String userId, String email) {
+    public String generateToken(String userId, String identifier) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + jwtExpirationMs);
 
         return Jwts.builder()
                 .setSubject(userId)
-                .claim("email", email)
+                .claim("identifier", identifier)
                 .setIssuedAt(now)
                 .setExpiration(expiry)
                 .signWith(key)

@@ -5,7 +5,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import Header from "@/components/shared/Header";
 import BottomNav from "@/components/shared/BottomNav";
-// import { Toaster } from "@/components/ui/toaster";
+import FloatingOrderWidget from "@/components/shared/FloatingOrderWidget";
 import { Toaster } from "sonner";
 import { usePathname } from "next/navigation";
 
@@ -42,8 +42,8 @@ export default function RootLayout({
         {!hideLayout && <Header />}
         <main className={cn(!hideLayout && "pb-20 md:pb-0")}>{children}</main>
         {!hideLayout && <BottomNav />}
-        {/* <Toaster /> */}
-          <Toaster richColors position="top-right" />
+        {!hideLayout && <FloatingOrderWidget />}
+        <Toaster richColors position="top-right" />
       </body>
     </html>
   );

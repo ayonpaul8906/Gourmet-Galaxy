@@ -7,12 +7,14 @@ public class User {
     @DocumentId
     private String id;
     private String name;
-    private String email;
-    private String passwordHash; 
-    private String role; 
+    private String email;       // optional (legacy)
+    private String phone;       // primary identifier for OTP auth
+    private String passwordHash;
+    private String role;
 
     public User() {}
 
+    // Legacy constructor (email-based)
     public User(String name, String email, String passwordHash) {
         this.name = name;
         this.email = email;
@@ -20,6 +22,15 @@ public class User {
         this.role = "USER";
     }
 
+    // Phone-based constructor
+    public User(String id, String name, String phone, String role) {
+        this.id = id;
+        this.name = name;
+        this.phone = phone;
+        this.role = role;
+    }
+
+    // Full constructor
     public User(String id, String name, String email, String passwordHash, String role) {
         this.id = id;
         this.name = name;
@@ -37,6 +48,9 @@ public class User {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+
     public String getPasswordHash() { return passwordHash; }
     public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
 
@@ -45,12 +59,7 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", role='" + role + '\'' +
-                '}';
+        return "User{id='" + id + "', name='" + name + "', phone='" + phone + "', role='" + role + "'}";
     }
 
     @Override
@@ -58,12 +67,11 @@ public class User {
         if (this == o) return true;
         if (!(o instanceof User)) return false;
         User other = (User) o;
-        return Objects.equals(email, other.email);
+        return Objects.equals(phone, other.phone) || Objects.equals(email, other.email);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(email);
+        return Objects.hash(phone, email);
     }
 }
-
