@@ -111,11 +111,11 @@ export default function ExplorePageClient({ allFoods }: ExplorePageClientProps) 
             { title: "Under ₹200", items: under200 },
             { title: "Premium Dishes (₹200+)", items: premium },
           ].map((group, idx) => (
-            <div key={idx}>
+            <div key={`group-${idx}-${group.title}`}>
               <h3 className="text-2xl font-semibold mb-4">{group.title}</h3>
               <ScrollContainer>
-                {group.items.map((item) => (
-                  <div key={item.id} className="min-w-[250px]">
+                {group.items.map((item, itemIdx) => (
+                  <div key={`budget-${group.title}-${item.id || itemIdx}-${itemIdx}`} className="min-w-[250px]">
                     <FoodCard item={item} />
                   </div>
                 ))}
@@ -131,9 +131,9 @@ export default function ExplorePageClient({ allFoods }: ExplorePageClientProps) 
           What’s Your Preference?
         </h2>
         <ScrollContainer>
-          {categories.map((cat) => (
+          {categories.map((cat, catIdx) => (
             <div
-              key={cat.name}
+              key={`pref-${cat.name}-${catIdx}`}
               className="relative h-48 w-60 flex-shrink-0 rounded-2xl overflow-hidden shadow-lg hover:scale-105 transition cursor-pointer"
               onClick={() => setSelectedCategory(cat.name)}
             >
@@ -157,8 +157,8 @@ export default function ExplorePageClient({ allFoods }: ExplorePageClientProps) 
           Top Searches
         </h2>
         <ScrollContainer>
-          {topSearchFoods.map((food) => (
-            <div key={food.id} className="min-w-[250px]">
+          {topSearchFoods.map((food, topIdx) => (
+            <div key={`top-${food.id || topIdx}-${topIdx}`} className="min-w-[250px]">
               <FoodCard item={food} />
             </div>
           ))}
@@ -192,34 +192,8 @@ export default function ExplorePageClient({ allFoods }: ExplorePageClientProps) 
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredCategoryFoods?.map((food) => (
-                  <div
-                    key={food.id}
-                    className="bg-white/70 border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300"
-                  >
-                    <div className="relative h-40 w-full">
-                      <Image
-                        src={food.imageUrl || "/food-placeholder.jpg"}
-                        alt={food.name}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="p-4 space-y-2">
-                      <h4 className="font-semibold text-lg text-black">{food.name}</h4>
-                      <p className="text-sm text-gray-500">
-                        From {food.restaurant}
-                      </p>
-                      <div className="flex justify-between items-center mt-2">
-                        <span className="font-bold text-orange-600">
-                          ₹{food.price}
-                        </span>
-                        <button className="bg-orange-500 hover:bg-orange-600 text-white text-sm px-3 py-1.5 rounded-lg">
-                          Add to Cart
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+                {filteredCategoryFoods?.map((food, catFoodIdx) => (
+                  <FoodCard key={`cat-spec-${food.id || catFoodIdx}-${catFoodIdx}`} item={food} />
                 ))}
               </div>
             </motion.div>

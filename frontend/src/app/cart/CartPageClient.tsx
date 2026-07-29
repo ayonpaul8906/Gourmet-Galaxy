@@ -15,6 +15,13 @@ import { Separator } from "@/components/ui/separator";
 import { formatPrice } from "@/lib/utils";
 import { Minus, Plus, Trash2, Lock, Settings } from "lucide-react";
 import { toast } from "sonner";
+import {
+  getCartItems,
+  getLocalCart,
+  updateQuantity as apiUpdateQuantity,
+  removeItem as apiRemoveItem,
+  addToCart as apiAddToCart,
+} from "@/lib/cartApi";
 
 interface CartItem {
   id: string;
@@ -37,8 +44,14 @@ interface CartPageClientProps {
 }
 
 export default function CartPageClient({ initialItems = [] }: CartPageClientProps) {
-  const [items, setItems] = useState<CartItem[]>(initialItems);
-  const [loading, setLoading] = useState(true);
+  const [items, setItems] = useState<CartItem[]>(() => {
+    const local = getLocalCart();
+    return local.length > 0 ? local : initialItems;
+  });
+  const [loading, setLoading] = useState<boolean>(() => {
+    const local = getLocalCart();
+    return local.length === 0;
+  });
   const [subtotal, setSubtotal] = useState(0);
   const [selectedDiscount, setSelectedDiscount] = useState<string | null>(null);
   const [discountAmount, setDiscountAmount] = useState(0);
@@ -51,21 +64,18 @@ export default function CartPageClient({ initialItems = [] }: CartPageClientProp
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const deliveryFee = 15.0;
-  const userId =
-    typeof window !== "undefined"
-      ? localStorage.getItem("userId") || "demo-user"
-      : "demo-user";
 
-  // ✅ fetch cart items for this user
+  // ✅ fetch cart items using central getCartItems()
   const fetchCartItems = async () => {
-    setLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cart/${userId}`);
-      if (!res.ok) throw new Error("Failed to fetch cart");
-      const data = await res.json();
-      setItems(data.items || []); // ✅ fixed
-    } catch (err) {
-      toast.error("Failed to load cart");
+      const data = await getCartItems();
+      if (data && Array.isArray(data.items)) {
+        setItems(data.items);
+      } else if (Array.isArray(data)) {
+        setItems(data);
+      }
+    } catch (err: any) {
+      console.warn("Cart sync notice:", err.message);
     } finally {
       setLoading(false);
     }
@@ -86,41 +96,31 @@ export default function CartPageClient({ initialItems = [] }: CartPageClientProp
   const updateQuantity = async (id: string, newQuantity: number) => {
     if (newQuantity <= 0) return handleRemoveItem(id);
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/cart/${userId}/update`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id, quantity: newQuantity }),
-        }
-      );
-      const data = await res.json();
-      if (data.status === "success") {
-        setItems(data.cartItems || []);
-        toast.success("Quantity updated");
+      const data = await apiUpdateQuantity(id, newQuantity);
+      if (data?.cartItems) {
+        setItems(data.cartItems);
+      } else if (data?.items) {
+        setItems(data.items);
       } else {
-        toast.error(data.message || "Failed to update quantity");
+        await fetchCartItems();
       }
+      toast.success("Quantity updated");
     } catch {
-      toast.error("Something went wrong");
+      toast.error("Failed to update quantity");
     }
   };
 
   const handleRemoveItem = async (id: string) => {
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/cart/${userId}/remove/${id}`,
-        {
-          method: "DELETE",
-        }
-      );
-      const data = await res.json();
-      if (data.status === "success") {
-        setItems(data.cartItems || []);
-        toast.success("Item removed");
+      const data = await apiRemoveItem(id);
+      if (data?.cartItems) {
+        setItems(data.cartItems);
+      } else if (data?.items) {
+        setItems(data.items);
       } else {
-        toast.error("Failed to remove item");
+        await fetchCartItems();
       }
+      toast.success("Item removed");
     } catch {
       toast.error("Error removing item");
     }
@@ -128,21 +128,13 @@ export default function CartPageClient({ initialItems = [] }: CartPageClientProp
 
   const addToCartApi = async (item: CartItem) => {
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/cart/add/${userId}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(item),
-        }
-      );
-      const data = await res.json();
-      if (data.status === "success") {
-        setItems(data.cartItems || []);
-        toast.success(`${item.name} added to cart`);
+      const data = await apiAddToCart(item);
+      if (data?.cartItems) {
+        setItems(data.cartItems);
       } else {
-        toast.error(data.message || "Failed to add to cart");
+        await fetchCartItems();
       }
+      toast.success(`${item.name} added to cart`);
     } catch (err) {
       toast.error("Error adding to cart");
     }
@@ -221,10 +213,11 @@ export default function CartPageClient({ initialItems = [] }: CartPageClientProp
     if (!next) setDiscountAmount(0);
   };
 
-  if (loading) {
+  if (loading && items.length === 0) {
     return (
-      <div className="flex justify-center items-center h-screen text-muted-foreground">
-        Loading your cart...
+      <div className="container mx-auto px-4 py-20 flex flex-col items-center justify-center min-h-[50vh] space-y-4">
+        <div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
+        <p className="text-muted-foreground text-sm font-medium">Fetching your cosmic cart...</p>
       </div>
     );
   }

@@ -9,14 +9,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Package, ChefHat, Bike, Home, CheckCircle2, Circle } from "lucide-react";
+import { Package, ChefHat, Bike, Home, CheckCircle2, Circle, Phone, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { getUserId } from "@/lib/cartApi";
 
 const stepsConfig = [
-  { name: "Placed", description: "We have received your order.", icon: Package },
-  { name: "Cooking", description: "Your food is being prepared.", icon: ChefHat },
-  { name: "Out for Delivery", description: "Your rider is on the way.", icon: Bike },
-  { name: "Delivered", description: "Enjoy your meal!", icon: Home },
+  { name: "Placed", description: "Order received & confirmed by restaurant.", icon: Package },
+  { name: "Cooking", description: "Master Chef is preparing your dish.", icon: ChefHat },
+  { name: "Out for Delivery", description: "Rider is heading to your address.", icon: Bike },
+  { name: "Delivered", description: "Food delivered. Bon appétit!", icon: Home },
 ];
 
 export default function TrackingPage() {
@@ -27,38 +28,52 @@ export default function TrackingPage() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const userId = localStorage.getItem("userId");
+        const userId = getUserId();
         const latestOrderId = localStorage.getItem("latestOrderId");
 
         if (!userId) {
-          setError("User not logged in.");
+          setError("User session not found.");
           setLoading(false);
           return;
         }
 
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/order/${userId}`);
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+        const res = await fetch(`${API_BASE_URL}/api/order/${userId}`);
         if (!res.ok) throw new Error("Failed to fetch orders");
 
         const data = await res.json();
-        let allOrders = Array.isArray(data) ? data : [];
+        let allOrders = Array.isArray(data) ? data : data?.orders ? data.orders : [];
 
-        // ✅ Filter only the latest placed order
+        // Deduplicate orders
+        const uniqueMap = new Map<string, any>();
+        allOrders.forEach((o, idx) => {
+          const key = o.id || o.orderId || `ord-${idx}`;
+          if (!uniqueMap.has(key)) {
+            uniqueMap.set(key, o);
+          }
+        });
+        let uniqueOrders = Array.from(uniqueMap.values());
+
+        // Filter latest placed order if specified
         if (latestOrderId) {
-          allOrders = allOrders.filter((o) => o.id === latestOrderId);
+          const filtered = uniqueOrders.filter((o) => o.id === latestOrderId || o.orderId === latestOrderId);
+          if (filtered.length > 0) uniqueOrders = filtered;
         }
 
-        // ✅ Normalize date and add ETA
-        const mappedOrders = allOrders.map((o) => {
+        // Map and normalize orders
+        const mappedOrders = uniqueOrders.map((o) => {
           const rawDate = o.orderDate ?? o.date ?? null;
           const orderTime = rawDate ? new Date(rawDate) : new Date();
-          const eta = new Date(orderTime.getTime() + 20 * 60 * 1000); // +20 min
+          const eta = new Date(orderTime.getTime() + 20 * 60 * 1000);
 
-          const statusIndex = stepsConfig.findIndex((s) => s.name === o.status);
+          const statusIndex = stepsConfig.findIndex(
+            (s) => s.name.toLowerCase() === String(o.status || "").toLowerCase()
+          );
           const currentStep = statusIndex >= 0 ? statusIndex + 1 : 1;
 
           return {
             ...o,
-            id: o.id ?? o.orderId,
+            id: o.id ?? o.orderId ?? "GG-101",
             date: orderTime,
             eta,
             steps: stepsConfig,
@@ -79,18 +94,18 @@ export default function TrackingPage() {
   }, []);
 
   const handleCancelOrder = async (orderId: string) => {
-    const userId = localStorage.getItem("userId");
+    const userId = getUserId();
     if (!userId) return;
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/order/update-status/${userId}/${orderId}`, {
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+      const res = await fetch(`${API_BASE_URL}/api/order/update-status/${userId}/${orderId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: "Cancelled" }),
       });
 
       if (res.ok) {
-        // ✅ Update the order state instantly
         setOrders((prev) =>
           prev.map((o) =>
             o.id === orderId ? { ...o, status: "Cancelled" } : o
@@ -103,50 +118,54 @@ export default function TrackingPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 text-zinc-100 min-h-screen">
-      <div className="text-center mb-12">
-        <h1 className="font-headline text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600">
-          Track Your Order
+    <div className="container mx-auto px-4 py-10 max-w-4xl space-y-8 pb-24 text-neutral-900 dark:text-neutral-100 min-h-screen">
+      <div className="text-center space-y-2">
+        <h1 className="font-headline font-extrabold text-4xl md:text-5xl primary-gradient text-transparent bg-clip-text">
+          Live Order Tracking
         </h1>
-        <p className="mt-4 text-lg text-zinc-400">Live tracking of your latest order.</p>
+        <p className="text-neutral-500 text-sm">Real-time status updates from our kitchen to your doorstep.</p>
       </div>
 
-      {loading && <p className="text-center text-lg text-zinc-300">Loading...</p>}
-      {error && <p className="text-center text-red-400">{error}</p>}
+      {loading && <p className="text-center text-neutral-500 py-12">Loading tracking details...</p>}
+      {error && <p className="text-center text-red-500 py-8">{error}</p>}
       {!loading && orders.length === 0 && !error && (
-        <p className="text-center text-zinc-400">No recent orders found.</p>
+        <div className="text-center py-16 glassmorphism rounded-3xl space-y-3">
+          <p className="text-lg font-bold">No active orders to track</p>
+          <p className="text-sm text-neutral-500">Place an order to see live tracking updates!</p>
+        </div>
       )}
 
-      <div className="space-y-8 max-w-4xl mx-auto">
+      <div className="space-y-8">
         {orders.map((order) => {
-          const isDelivered = order.status === "Delivered";
-          const isCancelled = order.status === "Cancelled";
+          const st = String(order.status || "").toLowerCase();
+          const isDelivered = st === "delivered";
+          const isCancelled = st === "cancelled";
 
           return (
             <Card
               key={order.id}
-              className="overflow-hidden bg-zinc-900/60 backdrop-blur-lg border border-zinc-700/50 shadow-2xl"
+              className="glassmorphism overflow-hidden border border-neutral-200 dark:border-neutral-800 shadow-2xl rounded-3xl"
             >
-              <CardHeader className="border-b border-zinc-700/50 p-6">
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start">
+              <CardHeader className="border-b border-neutral-100 dark:border-neutral-800/80 p-6">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                   <div>
-                    <CardDescription className="font-medium text-base text-orange-400">
-                      Your Order
-                    </CardDescription>
-                    <CardTitle className="font-headline text-2xl text-zinc-100">
+                    <span className="bg-orange-500/10 text-orange-600 font-extrabold text-xs px-3 py-1 rounded-full uppercase tracking-wider">
+                      Live Delivery Tracker
+                    </span>
+                    <CardTitle className="font-headline text-2xl font-bold mt-2">
                       Order #{order.id}
                     </CardTitle>
-                    <CardDescription className="text-zinc-400 pt-1">
-                      {order.date?.toLocaleDateString()} — {order.address}
+                    <CardDescription className="text-xs text-neutral-500 pt-0.5">
+                      {order.date?.toLocaleDateString()} — Delivery Address: <span className="font-medium text-neutral-700 dark:text-neutral-300">{order.address}</span>
                     </CardDescription>
                   </div>
                   <span
-                    className={`text-sm px-4 py-1.5 rounded-full font-semibold mt-3 sm:mt-0 shrink-0 ${
+                    className={`text-xs px-4 py-1.5 rounded-full font-bold uppercase tracking-wider shrink-0 ${
                       isDelivered
-                        ? "bg-green-500/20 text-green-300 border border-green-500/30"
+                        ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20"
                         : isCancelled
-                        ? "bg-red-500/20 text-red-300 border border-red-500/30"
-                        : "bg-orange-500/20 text-orange-300 border border-orange-500/30"
+                        ? "bg-red-500/10 text-red-600 border border-red-500/20"
+                        : "bg-orange-500 text-white shadow-md shadow-orange-500/20"
                     }`}
                   >
                     {order.status}
@@ -154,12 +173,12 @@ export default function TrackingPage() {
                 </div>
               </CardHeader>
 
-              <CardContent className="grid grid-cols-1 md:grid-cols-5 gap-x-12 gap-y-8 p-6">
-                {/* Show tracking steps only if NOT cancelled */}
+              <CardContent className="grid grid-cols-1 md:grid-cols-5 gap-8 p-6">
+                {/* Steps Timeline */}
                 {!isCancelled && (
                   <div className="md:col-span-2">
-                    <ul className="relative space-y-8">
-                      <div className="absolute left-4 top-2 bottom-2 w-0.5 bg-zinc-700" />
+                    <ul className="relative space-y-6">
+                      <div className="absolute left-4 top-2 bottom-2 w-0.5 bg-neutral-200 dark:bg-neutral-800" />
                       {order.steps.map((step: any, i: number) => {
                         const stepIndex = i + 1;
                         const isCompleted = stepIndex < order.currentStep;
@@ -168,23 +187,23 @@ export default function TrackingPage() {
 
                         return (
                           <li key={i} className="relative z-10 flex items-start gap-4">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-full shrink-0">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-full shrink-0 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800">
                               {isCompleted ? (
-                                <CheckCircle2 className="h-8 w-8 text-orange-500" />
+                                <CheckCircle2 className="h-6 w-6 text-emerald-500" />
                               ) : isCurrent ? (
-                                <span className="relative flex h-8 w-8">
+                                <span className="relative flex h-4 w-4">
                                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-                                  <span className="relative inline-flex rounded-full h-8 w-8 bg-orange-500 border-2 border-zinc-900"></span>
+                                  <span className="relative inline-flex rounded-full h-4 w-4 bg-orange-500"></span>
                                 </span>
                               ) : (
-                                <Circle className="h-8 w-8 text-zinc-600" />
+                                <Circle className="h-5 w-5 text-neutral-300 dark:text-neutral-700" />
                               )}
                             </div>
-                            <div className="pt-1">
-                              <p className={`font-medium ${isPending ? "text-zinc-500" : "text-zinc-100"}`}>
+                            <div className="pt-0.5">
+                              <p className={`font-bold text-sm ${isPending ? "text-neutral-400" : "text-neutral-900 dark:text-neutral-100"}`}>
                                 {step.name}
                               </p>
-                              <p className="text-sm text-zinc-400">{step.description}</p>
+                              <p className="text-xs text-neutral-500">{step.description}</p>
                             </div>
                           </li>
                         );
@@ -193,75 +212,73 @@ export default function TrackingPage() {
                   </div>
                 )}
 
-                {/* Right section (always visible) */}
+                {/* Right Details Panel */}
                 <div className={`${isCancelled ? "md:col-span-5" : "md:col-span-3"} space-y-6`}>
                   <div
-                    className={`rounded-lg p-6 text-center ${
+                    className={`rounded-2xl p-6 text-center space-y-1 ${
                       isDelivered
-                        ? "bg-green-500/10 border border-green-500/20"
+                        ? "bg-emerald-500/10 border border-emerald-500/20"
                         : isCancelled
                         ? "bg-red-500/10 border border-red-500/20"
                         : "bg-orange-500/10 border border-orange-500/20"
                     }`}
                   >
-                    <p
-                      className={`text-sm font-medium ${
-                        isDelivered
-                          ? "text-green-300"
-                          : isCancelled
-                          ? "text-red-300"
-                          : "text-orange-300"
-                      }`}
-                    >
-                      {isDelivered
-                        ? "Delivered"
-                        : isCancelled
-                        ? "Order Cancelled"
-                        : "Estimated Delivery"}
+                    <p className="text-xs font-bold uppercase tracking-wider text-orange-600">
+                      {isDelivered ? "Delivered" : isCancelled ? "Order Cancelled" : "Estimated Arrival"}
                     </p>
-                    <p
-                      className={`text-4xl font-bold ${
-                        isDelivered
-                          ? "text-green-300"
-                          : isCancelled
-                          ? "text-red-300"
-                          : "text-orange-300"
-                      }`}
-                    >
+                    <p className="text-3xl font-extrabold text-neutral-900 dark:text-neutral-100">
                       {!isDelivered && !isCancelled
                         ? order.eta.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
                         : order.date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                     </p>
                   </div>
 
+                  {/* Rider Card Simulation */}
+                  {!isDelivered && !isCancelled && (
+                    <div className="p-4 border border-neutral-200 dark:border-neutral-800 rounded-2xl flex items-center justify-between bg-white/50 dark:bg-neutral-900/50">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-orange-500/10 text-orange-600 rounded-full flex items-center justify-center font-bold">
+                          <Bike className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <p className="font-bold text-sm">Rahul Sharma</p>
+                          <p className="text-xs text-neutral-500">Galactic Delivery Partner • 4.9★</p>
+                        </div>
+                      </div>
+                      <Button size="sm" variant="outline" className="rounded-xl border-orange-200 text-orange-600 text-xs font-semibold gap-1">
+                        <Phone className="w-3.5 h-3.5" /> Call Rider
+                      </Button>
+                    </div>
+                  )}
+
                   {order.items && order.items.length > 0 && (
-                    <div className="pt-2">
-                      <p className="font-semibold mb-3 text-lg text-zinc-100">Your Items</p>
-                      <ul className="space-y-3">
+                    <div className="space-y-2">
+                      <p className="font-bold text-sm text-neutral-900 dark:text-neutral-100">Items Ordered</p>
+                      <ul className="space-y-2">
                         {order.items.map((item: any, i: number) => (
-                          <li key={i} className="flex justify-between text-zinc-300">
+                          <li key={i} className="flex justify-between text-sm text-neutral-600 dark:text-neutral-400">
                             <span>
-                              <span className="font-medium text-zinc-100">{item.quantity} ×</span>{" "}
-                              {item.name}
+                              <span className="font-bold text-neutral-900 dark:text-neutral-100">{item.quantity}x</span> {item.name}
                             </span>
+                            <span className="font-semibold text-neutral-800 dark:text-neutral-200">₹{(item.price || 0) * (item.quantity || 1)}</span>
                           </li>
                         ))}
                       </ul>
                     </div>
                   )}
 
-                  <Separator className="bg-zinc-700/50" />
+                  <Separator />
 
-                  <div className="flex justify-between items-center pt-2">
-                    <p className="text-xl font-bold text-zinc-100">Total:</p>
-                    <p className="text-xl font-bold text-orange-400">₹{order.totalAmount ?? 0}</p>
+                  <div className="flex justify-between items-center pt-1">
+                    <p className="text-base font-bold">Total Paid:</p>
+                    <p className="text-xl font-extrabold text-orange-600">₹{order.totalAmount ?? 0}</p>
                   </div>
 
                   {!isDelivered && !isCancelled && (
                     <Button
                       onClick={() => handleCancelOrder(order.id)}
                       variant="destructive"
-                      className="w-full mt-4 bg-red-600 hover:bg-red-700 text-white font-semibold hover:cursor-pointer"
+                      className="w-full rounded-xl font-bold text-xs"
                     >
                       Cancel Order
                     </Button>
