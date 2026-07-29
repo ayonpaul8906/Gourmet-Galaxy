@@ -46,7 +46,7 @@ export default function TrackingPage() {
 
         // Deduplicate orders
         const uniqueMap = new Map<string, any>();
-        allOrders.forEach((o, idx) => {
+        allOrders.forEach((o: any, idx: number) => {
           const key = o.id || o.orderId || `ord-${idx}`;
           if (!uniqueMap.has(key)) {
             uniqueMap.set(key, o);
@@ -56,7 +56,7 @@ export default function TrackingPage() {
 
         // Filter latest placed order if specified
         if (latestOrderId) {
-          const filtered = uniqueOrders.filter((o) => o.id === latestOrderId || o.orderId === latestOrderId);
+          const filtered = uniqueOrders.filter((o: any) => o.id === latestOrderId || o.orderId === latestOrderId);
           if (filtered.length > 0) uniqueOrders = filtered;
         }
 
