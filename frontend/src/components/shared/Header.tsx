@@ -56,8 +56,8 @@ export default function Header() {
       <div className="container flex h-16 max-w-screen-2xl items-center justify-between px-4">
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center space-x-2.5 group">
-            <div className="p-2 rounded-xl bg-orange-500/10 group-hover:bg-orange-500/20 transition-all">
-              <Flame className="h-6 w-6 text-orange-500" />
+            <div className="rounded-xl transition-all">
+              <img src="/logo.png" alt="Gourmet Galaxy" className="h-15 w-15 text-orange-500" />
             </div>
             <span className="font-bold text-2xl font-headline primary-gradient text-transparent bg-clip-text">
               Gourmet Galaxy

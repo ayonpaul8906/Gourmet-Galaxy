@@ -10,7 +10,7 @@ import {
   clearCart,
   updateQuantity,
   removeItem,
-  getCartItems,
+  getLocalCart,
 } from "@/lib/cartApi";
 import { toast } from "sonner";
 
@@ -32,30 +32,44 @@ export default function FoodCard({ item, className }: FoodCardProps) {
   const [quantity, setQuantity] = useState(0);
   const [cartDocId, setCartDocId] = useState<string | null>(null);
 
-  // Determine if Veg or Non-Veg based on category/name
   const isVeg =
     item.category?.toLowerCase().includes("veg") ||
     item.name?.toLowerCase().includes("veg") ||
     item.category?.toLowerCase().includes("salad") ||
     item.category?.toLowerCase().includes("paneer");
 
+  // ✅ Real-time cart state sync listening to "cart_updated" custom window event
   useEffect(() => {
-    const fetchCart = async () => {
-      try {
-        const data = await getCartItems();
-        const existingItem = data?.items?.find(
-          (i: any) => i.name === item.name && (i.restaurant === item.restaurant || !item.restaurant)
-        );
-        if (existingItem) {
-          setQuantity(existingItem.quantity || 1);
-          setCartDocId(existingItem.id);
-        }
-      } catch (err) {
-        console.error("Failed to load cart items", err);
+    const syncWithLocalCart = () => {
+      const currentCart = getLocalCart();
+      const match = currentCart.find((i: any) => {
+        if (!i.name || !item.name) return false;
+        const sameName = i.name.trim().toLowerCase() === item.name.trim().toLowerCase();
+        const sameRest =
+          !item.restaurant ||
+          !i.restaurant ||
+          i.restaurant.trim().toLowerCase() === item.restaurant.trim().toLowerCase();
+        return sameName && sameRest;
+      });
+
+      if (match) {
+        setQuantity(match.quantity || 1);
+        setCartDocId(match.id);
+      } else {
+        setQuantity(0);
+        setCartDocId(null);
       }
     };
-    fetchCart();
-  }, [item.name, item.restaurant]);
+
+    syncWithLocalCart();
+    window.addEventListener("cart_updated", syncWithLocalCart);
+    window.addEventListener("focus", syncWithLocalCart);
+
+    return () => {
+      window.removeEventListener("cart_updated", syncWithLocalCart);
+      window.removeEventListener("focus", syncWithLocalCart);
+    };
+  }, [item.id, item.name, item.restaurant]);
 
   const handleAddToCart = async () => {
     setIsLoading(true);
@@ -77,7 +91,6 @@ export default function FoodCard({ item, className }: FoodCardProps) {
             onClick: async () => {
               await clearCart();
               const newRes = await addToCart(item);
-              setQuantity(1);
               if (newRes.cartItems?.length) {
                 const newItem = newRes.cartItems.find(
                   (i: any) => i.name === item.name
@@ -89,7 +102,6 @@ export default function FoodCard({ item, className }: FoodCardProps) {
           },
         });
       } else if (res.status === "success") {
-        setQuantity(1);
         if (res.cartItems?.length) {
           const newItem = res.cartItems.find(
             (i: any) => i.name === item.name
@@ -113,7 +125,6 @@ export default function FoodCard({ item, className }: FoodCardProps) {
     setQuantity(newQty);
     try {
       await updateQuantity(cartDocId, newQty);
-      toast.success("Quantity increased");
     } catch {
       toast.error("Failed to update quantity");
     }
@@ -126,7 +137,6 @@ export default function FoodCard({ item, className }: FoodCardProps) {
       setQuantity(newQty);
       try {
         await updateQuantity(cartDocId, newQty);
-        toast.success("Quantity decreased");
       } catch {
         toast.error("Failed to update quantity");
       }
@@ -150,7 +160,7 @@ export default function FoodCard({ item, className }: FoodCardProps) {
   return (
     <div
       className={cn(
-        "glassmorphism rounded-3xl overflow-hidden group transition-all duration-300 hover:shadow-2xl hover:-translate-y-1.5 border border-neutral-200/80 dark:border-neutral-800/80 bg-white/80 dark:bg-neutral-900/80 flex flex-col justify-between",
+        "glassmorphism rounded-3xl overflow-hidden group transition-all duration-300 hover:shadow-2xl hover:-translate-y-1.5 border border-neutral-200/80 dark:border-neutral-800/80 bg-white/80 dark:bg-neutral-900/80 flex flex-col justify-between h-full",
         className
       )}
     >
@@ -168,7 +178,6 @@ export default function FoodCard({ item, className }: FoodCardProps) {
           </div>
         )}
 
-        {/* Gradient Overlay for Image readability */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 pointer-events-none" />
 
         {/* Veg / Non-Veg Indicator Tag */}

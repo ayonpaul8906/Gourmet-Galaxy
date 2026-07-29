@@ -257,24 +257,8 @@ export default function ProfilePage() {
         
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
           <div className="flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
-            <div className="relative group">
-              <Avatar className="w-24 h-24 md:w-28 md:h-28 border-4 border-orange-500 shadow-xl">
-                <AvatarImage src={avatarUrl} alt={name} />
-                <AvatarFallback className="text-2xl font-bold bg-orange-500 text-white">
-                  {name ? name.split(" ").map((n) => n[0]).join("") : "GG"}
-                </AvatarFallback>
-              </Avatar>
-              <button
-                type="button"
-                onClick={() => {
-                  const newUrl = prompt("Enter new Avatar Image URL:", avatarUrl);
-                  if (newUrl) setAvatarUrl(newUrl);
-                }}
-                className="absolute bottom-0 right-0 p-2 bg-orange-500 hover:bg-orange-600 text-white rounded-full shadow-lg transition"
-                title="Change Avatar"
-              >
-                <Edit3 className="w-4 h-4" />
-              </button>
+            <div className="w-24 h-24 md:w-28 md:h-28 rounded-full bg-gradient-to-tr from-orange-600 via-orange-500 to-amber-400 text-white font-extrabold text-4xl flex items-center justify-center border-4 border-white/20 shadow-xl shadow-orange-500/30 flex-shrink-0">
+              {name ? name.charAt(0).toUpperCase() : "G"}
             </div>
 
             <div className="space-y-1.5">
@@ -471,24 +455,12 @@ export default function ProfilePage() {
                 {addresses.map((addr) => (
                   <Card
                     key={addr.id}
-                    className={cn(
-                      "glassmorphism relative border-2 transition-all hover:shadow-lg",
-                      addr.isDefault
-                        ? "border-orange-500 bg-orange-500/5"
-                        : "border-neutral-200 dark:border-neutral-800"
-                    )}
+                    className="glassmorphism relative border border-neutral-200 dark:border-neutral-800 transition-all hover:shadow-lg"
                   >
                     <CardHeader className="pb-2 flex flex-row items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="bg-orange-500/10 text-orange-600 font-extrabold text-xs px-2.5 py-1 rounded-lg uppercase tracking-wide">
-                          {addr.type}
-                        </span>
-                        {addr.isDefault && (
-                          <span className="bg-emerald-500/10 text-emerald-600 text-xs font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
-                            <Check className="w-3 h-3" /> Default
-                          </span>
-                        )}
-                      </div>
+                      <span className="bg-orange-500/10 text-orange-600 font-extrabold text-xs px-2.5 py-1 rounded-lg uppercase tracking-wide">
+                        {addr.type}
+                      </span>
                       <button
                         onClick={() => handleDeleteAddress(addr.id)}
                         className="text-neutral-400 hover:text-red-500 p-1 transition"
@@ -497,23 +469,12 @@ export default function ProfilePage() {
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </CardHeader>
-                    <CardContent className="space-y-3">
+                    <CardContent className="space-y-2">
                       <p className="font-bold text-base">{addr.name}</p>
                       <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
                         {addr.street}, {addr.city} - <span className="font-semibold text-neutral-800 dark:text-neutral-200">{addr.pincode}</span>
                       </p>
                       <p className="text-xs text-neutral-500">Phone: {addr.phone}</p>
-
-                      {!addr.isDefault && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleSetDefaultAddress(addr.id)}
-                          className="w-full text-xs font-semibold text-orange-600 border-orange-200 hover:bg-orange-50 rounded-lg mt-2"
-                        >
-                          Set as Default
-                        </Button>
-                      )}
                     </CardContent>
                   </Card>
                 ))}

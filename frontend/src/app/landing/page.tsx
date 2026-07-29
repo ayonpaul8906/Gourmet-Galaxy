@@ -40,16 +40,6 @@ export default function LandingPage() {
 
       {/* 🍕 Hero Section */}
       <main className="z-10 flex-1 flex flex-col items-center justify-center text-center px-4 md:px-8 py-16 md:py-24 max-w-6xl mx-auto space-y-12">
-        {/* Floating Tag */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/30 text-orange-400 px-4 py-2 rounded-full text-xs md:text-sm font-semibold backdrop-blur-md shadow-lg"
-        >
-          <Zap className="w-4 h-4 text-orange-400 animate-pulse" />
-          <span>⚡ 15-Minute Express Galactic Delivery</span>
-        </motion.div>
 
         {/* Hero Title */}
         <motion.h1
